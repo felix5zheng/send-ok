@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>傳送都ok — 把 AirDrop 放進 Mac 瀏海</title>
+<link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="description" content="把檔案拖到 Mac 瀏海，放開就用 AirDrop 傳送。選單列看進度，傳完自動關掉 AirDrop 視窗。免費。">
+<meta property="og:title" content="傳送都ok">
+<meta property="og:description" content="拖到瀏海，放開就傳。">
+<meta property="og:image" content="https://felix5zheng.github.io/send-ok/icons/app-icon-256.png">
+<style>
+
+
+:root {
+  --paper: #F4F4F1; --block: #FBFBF9; --ink: #1D1D1B; --ink-2: #5A5A52; --mute: #8E8E86;
+  --line: rgba(29,29,27,.15); --line-strong: rgba(29,29,27,.32); --ai: #44617B;
+  --font: -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --ease-spring: cubic-bezier(.34, 1.4, .64, 1);
+}
+* { box-sizing: border-box; }
+/* 字體跟 App 一樣用系統字:中文蘋方、日文冬青黑體、西文 San Francisco */
+html[lang="zh-Hans"] { --font: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif; }
+html[lang="ja"] { --font: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif; }
+html[lang="en"], html[lang="es"], html[lang="pt"] { --font: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif; }
+html:is([lang="en"], [lang="es"], [lang="pt"]) :is(body, .top, .for, .sub, .pill, .ghost, .block-h h2, .block-h .meta, .hero-dl .k, .hero-dl .muted, .kv dt, .feat .h, .core-h, .steps b, .field label, .field input, .msg, footer) { letter-spacing: 0; }
+html { scroll-behavior: smooth; background: var(--paper); }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font); font-weight: 400;
+  font-size: 15px; line-height: 1.75; letter-spacing: .02em; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+  padding-bottom: env(safe-area-inset-bottom, 0px); }
+h1, h2, h3, b, strong { font-weight: 600; }
+a { color: inherit; }
+::selection { background: rgba(68,97,123,.18); }
+:focus-visible { outline: 1px solid var(--ink); outline-offset: 3px; border-radius: 2px; }
+
+/* 頂欄 */
+.top { position: sticky; top: 0; z-index: 20; height: 50px; display: flex; justify-content: space-between; align-items: center;
+  padding: 0 20px; padding-top: env(safe-area-inset-top, 0px); border-bottom: 1px solid var(--line-strong);
+  background: rgba(244,244,241,.82); -webkit-backdrop-filter: saturate(160%) blur(18px); backdrop-filter: saturate(160%) blur(18px);
+  font-size: 14px; letter-spacing: .05em; }
+.brand { display: inline-flex; align-items: center; gap: 9px; text-decoration: none; color: inherit; }
+.brand img { width: 20px; height: 20px; display: block; }
+.top nav { display: flex; align-items: center; gap: 20px; }
+/* 語言切換 */
+.top nav a { text-decoration: none; color: var(--ink-2); transition: color .3s; }
+.top nav a:hover { color: var(--ink); }
+.top .brand, .top nav a, .lang-btn { white-space: nowrap; }
+.top .brand, .top .lang { flex: none; }
+
+.wrap { max-width: 1120px; margin: 0 auto; padding: 16px 20px 0; display: flex; flex-direction: column; gap: 14px; }
+
+/* 區塊 */
+.block { background: var(--block); border: 1px solid var(--line-strong); border-radius: 12px; overflow: hidden; }
+.block-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 18px;
+  border-bottom: 1px solid var(--line-strong); background: rgba(29,29,27,.025); }
+.block-h h2 { margin: 0; font-size: 15px; letter-spacing: .06em; }
+.block-h .meta { font-size: 12px; color: var(--mute); letter-spacing: .04em; }
+.block-b { padding: 16px 18px 18px; }
+.pair { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 14px; align-items: stretch; }
+
+/* 開場 */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) 300px; }
+.hero-main { padding: 34px 34px 32px; }
+.app-icon { display: block; width: 64px; height: 64px; margin: 0 0 22px; opacity: 0; filter: blur(6px); transform: translateY(8px); animation: iconIn .9s var(--ease-out) .1s forwards; }
+@keyframes iconIn { to { opacity: 1; filter: none; transform: none; } }
+.hero .for { font-size: 13px; color: var(--ink-2); letter-spacing: .08em; margin: 0 0 12px; }
+.hero h1 { font-size: clamp(52px, 8vw, 92px); line-height: 1.04; letter-spacing: -.02em; margin: 0 0 18px; }
+.hero .sub { font-size: clamp(16px, 1.8vw, 19px); color: var(--ink-2); letter-spacing: .05em; line-height: 1.75; margin: 0; }
+.ch { display: inline-block; }
+.hero-dl { border-left: 1px solid var(--line-strong); padding: 22px 22px 22px; display: flex; flex-direction: column; background: rgba(29,29,27,.018); }
+.hero-dl .k { font-size: 12px; color: var(--mute); letter-spacing: .1em; }
+.hero-dl .ver { font-size: 44px; font-weight: 300; line-height: 1.1; letter-spacing: -.01em; margin: 2px 0 12px; font-variant-numeric: tabular-nums; }
+.kv { display: grid; grid-template-columns: minmax(70px, max-content) minmax(0, 1fr); margin: 0 0 16px; font-size: 13px; border-top: 1px solid var(--line); }
+.kv dt, .kv dd { margin: 0; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.kv dt { color: var(--mute); letter-spacing: .06em; padding-right: 12px; }
+.kv dd { color: var(--ink); }
+.hero-dl .muted { font-size: 12px; color: var(--mute); margin-top: 8px; letter-spacing: .04em; }
+
+/* 按鈕 */
+.pill { font-family: var(--font); font-weight: 500; font-size: 15px; letter-spacing: .06em; text-align: center; text-decoration: none; display: inline-block;
+  color: var(--paper); background: var(--ink); border: 0; border-radius: 999px; padding: 10px 28px; cursor: pointer;
+  transition: transform .35s var(--ease-spring), background .3s, opacity .3s; }
+.pill:hover { background: #2C2C29; }
+.pill:active { transform: scale(.96); }
+.pill[aria-disabled="true"] { background: transparent; color: var(--mute); border: 1px solid var(--line-strong); pointer-events: none; }
+.pill.line { background: transparent; color: var(--ink); border: 2px solid var(--ink); padding: 8px 26px; }
+.pill.line:hover { background: rgba(29,29,27,.06); }
+.pill.line[aria-disabled="true"] { color: var(--mute); border: 2px solid var(--line-strong); background: transparent; }
+.ghost { font-family: var(--font); font-weight: 400; font-size: 13px; letter-spacing: .04em; color: var(--ink);
+  background: transparent; border: 1px solid var(--line-strong); border-radius: 999px; padding: 5px 16px; min-width: 84px; cursor: pointer;
+  transition: transform .3s var(--ease-spring), border-color .25s, background .25s; }
+.ghost:hover { border-color: rgba(29,29,27,.55); background: rgba(29,29,27,.05); }
+.ghost:active { transform: scale(.96); }
+.swap-t { display: inline-block; transition: opacity .28s, filter .28s, transform .28s; }
+.swap-t.out { opacity: 0; filter: blur(6px); transform: translateY(5px); }
+
+/* 領取 */
+.lede { color: var(--ink-2); font-size: 14.5px; margin: 0 0 14px; }
+.claim { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+.field { flex: 1 1 240px; min-width: 0; }
+.field label { display: block; font-size: 12px; color: var(--mute); letter-spacing: .1em; margin-bottom: 2px; }
+.field input { width: 100%; border: 0; border-bottom: 1px solid var(--line-strong); background: transparent;
+  font-family: var(--font); font-weight: 400; font-size: 17px; letter-spacing: .02em; color: var(--ink);
+  padding: 6px 0 8px; border-radius: 0; outline: none; transition: border-color .3s; }
+.field input:focus { border-bottom-color: var(--ink); }
+.field input::placeholder { color: var(--mute); }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.msg { min-height: 22px; margin-top: 10px; font-size: 13.5px; color: var(--ink-2); letter-spacing: .03em; }
+.msg.err { color: #8A3B2E; }
+.result { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .6s var(--ease-out); }
+.result.on { grid-template-rows: 1fr; }
+.result > div { overflow: hidden; }
+.result .inner { padding-top: 10px; opacity: 0; filter: blur(6px); transform: translateY(6px);
+  transition: opacity .6s .1s var(--ease-out), filter .6s .1s var(--ease-out), transform .6s .1s var(--ease-out); }
+.result.on .inner { opacity: 1; filter: blur(0); transform: none; }
+.keyrow { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; border: 1px dashed var(--line-strong); border-radius: 8px; padding: 10px 14px; }
+.keyrow code { flex: 1 1 auto; font-family: var(--mono); font-size: clamp(15px, 2vw, 18px); letter-spacing: .05em; color: var(--ink); word-break: break-all; }
+.note { border-left: 2px solid var(--ai); padding: 1px 0 1px 12px; margin: 14px 0 0; color: var(--ink-2); font-size: 13px; line-height: 1.7; }
+
+/* 開始使用 */
+.next { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+.next li { counter-increment: s; display: grid; grid-template-columns: 30px minmax(0, 1fr); padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--ink-2); }
+.next li:first-child { padding-top: 0; }
+.next li:last-child { border-bottom: 0; padding-bottom: 0; }
+.next li::before { content: counter(s); color: var(--ink); font-size: 17px; line-height: 1.5; }
+.next b { color: var(--ink); }
+
+/* 特色 */
+.feats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.feat { padding: 14px 14px 16px; border-bottom: 1px solid var(--line); min-width: 0; }
+.feat:not(:nth-child(3n+1)) { border-left: 1px solid var(--line); }
+.feat:nth-last-child(-n+3) { border-bottom: 0; }
+.feat .h { font-size: 15.5px; font-weight: 600; letter-spacing: .02em; margin: 13px 4px 4px; }
+.feat .d { color: var(--ink-2); font-size: 13.5px; line-height: 1.7; margin: 0 4px; }
+.feat-ind { display: none; }
+
+/* 特色小動畫:用 App 自己的深色介面畫成迷你示意(配色取自 App 色系表) */
+.scene {
+  --bg: #1C1A19; --grid: rgba(236,227,210,.055); --glow: rgba(162,83,71,.34);
+  --win: linear-gradient(165deg, #2F2C2A, #262321); --edge: rgba(236,227,210,.1); --shadow: 0 12px 26px rgba(0,0,0,.42);
+  --noti: linear-gradient(165deg, #3A3633, #2E2A28);
+  --tx: #F5F0E8; --tx2: rgba(245,240,232,.62); --tx3: rgba(245,240,232,.36);
+  --track: rgba(236,227,210,.13); --solid: rgba(236,227,210,.2); --zone: rgba(236,227,210,.06);
+  --ctl: #2E2A28; --ctlB: rgba(236,227,210,.16); --selB: rgba(236,227,210,.62); --selF: #3A3532;
+  --pri: #A25347; --priT: #D08072; --priTint: rgba(162,83,71,.24);
+  --ver: #C29D58; --verT: #CCAF72; --verTint: rgba(194,157,88,.16); --verLine: rgba(194,157,88,.34);
+  --ok: #85B5AC; --okTint: rgba(133,181,172,.15); --okLine: rgba(133,181,172,.34); --okFill: rgba(133,181,172,.62);
+  --sdBody: #F5F0E8; --sdLine: transparent; --contacts: #C29D58;
+  --toastSh: 0 6px 14px rgba(0,0,0,.32); --input: #141211; --card2: rgba(236,227,210,.05); --onPri: #FFF8F0;
+  position: relative; height: 170px; border-radius: 8px; background: var(--bg); overflow: hidden; isolation: isolate;
+  font-family: var(--font);
+  font-weight: 400; font-size: 11px; line-height: 1.3; letter-spacing: .01em; color: var(--tx);
+}
+@media (prefers-color-scheme: light) {
+.scene {
+  --bg: #F3EFE8; --grid: rgba(46,42,40,.075); --glow: rgba(162,83,71,.15);
+  --win: #FFFEFB; --edge: rgba(46,42,40,.09); --shadow: 0 1px 0 #ECE5DA, 0 8px 20px rgba(46,42,40,.08);
+  --noti: #FFFEFB;
+  --tx: #2E2A28; --tx2: rgba(46,42,40,.62); --tx3: rgba(46,42,40,.4);
+  --track: rgba(46,42,40,.09); --solid: rgba(46,42,40,.13); --zone: rgba(46,42,40,.05);
+  --ctl: #FFFEFB; --ctlB: rgba(46,42,40,.15); --selB: rgba(46,42,40,.55); --selF: #F6F2EB;
+  --priT: #8C4639; --priTint: rgba(162,83,71,.1);
+  --ver: #B28F49; --verT: #7C5F23; --verTint: rgba(178,143,73,.14); --verLine: rgba(178,143,73,.38);
+  --ok: #39655F; --okTint: rgba(57,101,95,.1); --okLine: rgba(57,101,95,.3); --okFill: rgba(57,101,95,.5);
+  --sdBody: #FFFEFB; --sdLine: rgba(46,42,40,.5); --contacts: #B28F49;
+  --toastSh: 0 4px 10px rgba(46,42,40,.08); --input: #FFFFFF; --card2: #FFFEFB; --onPri: #FFFDF8;
+  box-shadow: inset 0 0 0 1px rgba(46,42,40,.08);
+}
+}
+.scene::before { content: ""; position: absolute; z-index: -1; width: 190px; height: 190px; left: calc(50% - 95px); top: -10px; border-radius: 50%;
+  background: radial-gradient(circle, var(--glow), transparent 64%); filter: blur(18px); animation: scGlow 11s ease-in-out infinite alternate; pointer-events: none; }
+.scene::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background-image: radial-gradient(var(--grid) 1px, transparent 1.2px); background-size: 14px 14px; background-position: 7px 7px; }
+@keyframes scGlow { from { transform: translate(-70px, -14px) scale(.9); } to { transform: translate(70px, 16px) scale(1.12); } }
+.scene:not(.on)::before { animation-play-state: paused; }
+.stage { position: absolute; left: 50%; top: 50%; width: 240px; height: 132px; margin: -66px 0 0 -120px; transform: scale(var(--k, 1)); transition: opacity .5s ease; }
+.stage > * { position: absolute; }
+.scene.out .stage { opacity: 0; }
+.scene.rs .stage, .scene.rs .stage *, .scene.rs .stage *::before { transition: none !important; }
+.scene.still .stage, .scene.still .stage *, .scene.still .stage *::before { transition: none !important; animation-duration: 0s !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; }
+.scene.still::before { animation: none; }
+
+/* 共用零件 */
+.ico { display: block; flex: none; }
+.rise { opacity: 0; transform: translateY(8px); transition: opacity .55s var(--ease-out), transform .7s var(--ease-out); transition-delay: var(--dl, 0s); }
+.scene.s1 .rise { opacity: 1; transform: none; }
+.mwin { box-sizing: border-box; border-radius: 9px; padding: 10px 11px 11px; background: var(--win); border: 1px solid var(--edge); box-shadow: var(--shadow); }
+.wdots { display: flex; gap: 4px; margin-bottom: 9px; }
+.wdots i { width: 5px; height: 5px; border-radius: 50%; background: var(--tx3); }
+.task { display: flex; align-items: center; gap: 9px; }
+.tile { width: 26px; height: 26px; border-radius: 7px; flex: none; display: grid; place-items: center; color: var(--pri); background: var(--priTint); transition: color .35s ease, background .35s ease; }
+.tile .ico { width: 11px; height: 13px; --sdLine: transparent; --contacts: rgba(255,255,255,.5); }
+.task .nm2 { min-width: 0; }
+.task .t { display: flex; align-items: center; gap: 6px; height: 17px; }
+.task b { font-weight: 600; font-size: 12px; letter-spacing: .02em; white-space: nowrap; }
+.task .sub { display: block; font-size: 9.5px; color: var(--tx2); margin-top: 1px; white-space: nowrap; }
+.tags { display: grid; height: 17px; flex: none; }
+.tag { grid-area: 1 / 1; justify-self: start; height: 17px; line-height: 17px; padding: 0 6px; border-radius: 5px; font-size: 9.5px; font-weight: 600; white-space: nowrap;
+  opacity: 0; transform: translateY(3px); transition: opacity .3s ease, transform .35s var(--ease-out); }
+.tag.pri { color: var(--priT); background: var(--priTint); }
+.tag.ver, .tag.warn { color: var(--verT); background: var(--verTint); }
+.tag.ok { color: var(--ok); background: var(--okTint); }
+.bar { position: relative; height: 4px; border-radius: 2px; background: var(--track); overflow: hidden; }
+.bar i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 2px; }
+.bar .fp { background: var(--pri); }
+.bar .fv { background: var(--ver); }
+.bar .fo { background: var(--ok); width: 100%; opacity: 0; transition: opacity .3s ease; }
+.toast { left: 50%; height: 22px; padding: 0 10px 0 8px; display: flex; align-items: center; gap: 5px; border-radius: 999px; font-size: 10.5px; font-weight: 500; white-space: nowrap;
+  opacity: 0; transform: translate(-50%, 6px) scale(.96); transition: opacity .35s ease, transform .5s var(--ease-spring); }
+.toast .ico { width: 11px; height: 11px; }
+.toast.ok { color: var(--ok); background: linear-gradient(var(--okTint), var(--okTint)), var(--bg); box-shadow: inset 0 0 0 1px var(--okLine), var(--toastSh); }
+.toast.warn { color: var(--verT); background: linear-gradient(var(--verTint), var(--verTint)), var(--bg); box-shadow: inset 0 0 0 1px var(--verLine), var(--toastSh); }
+.cap { left: 0; right: 0; height: 16px; font-size: 10.5px; color: var(--tx2); }
+.cap span { position: absolute; left: 0; right: 0; top: 0; text-align: center; white-space: nowrap; opacity: 0; transform: translateY(4px); transition: opacity .35s ease, transform .45s var(--ease-out); }
+.srcsd { color: var(--sdBody); }
+
+/* 0 核心流程(寬版):插卡 → 自動辨識 → 開始備份 → 讀回驗證 → 退卡 */
+.core { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.55fr); border-bottom: 1px solid var(--line); }
+.core .scene { grid-column: 2; grid-row: 1; height: 320px; margin: 14px 14px 14px 0; }
+.core-txt { grid-column: 1; grid-row: 1; min-width: 0; padding: 22px 22px 22px 26px; display: flex; flex-direction: column; justify-content: center; }
+.core-h { font-size: clamp(24px, 2.6vw, 30px); font-weight: 600; line-height: 1.3; letter-spacing: .02em; margin: 0 0 8px; text-wrap: balance; }
+.core-d { color: var(--ink-2); font-size: 14.5px; margin: 0 0 18px; }
+.steps { list-style: none; margin: 0; padding: 0; counter-reset: st; border-top: 1px solid var(--line); }
+.steps li { counter-increment: st; display: grid; grid-template-columns: 28px minmax(0, 1fr); padding: 9px 0 10px; border-bottom: 1px solid var(--line); color: var(--mute); transition: color .5s var(--ease-out); }
+.steps li::before { content: counter(st); grid-row: span 2; font-size: 17px; line-height: 1.45; }
+.steps b { font-size: 15px; letter-spacing: .05em; line-height: 1.55; }
+.steps span { font-size: 13px; line-height: 1.65; }
+.sc-core.s1 ~ .core-txt .st1, .sc-core.s6 ~ .core-txt .st2, .sc-core.s8 ~ .core-txt .st3 { color: var(--ink); }
+.sc-core.s6 ~ .core-txt .st1, .sc-core.s8 ~ .core-txt .st2 { color: var(--mute); }
+
+.cursor { left: 0; top: 0; width: 13px; height: 18px; opacity: 0; transform: translate(206px, 130px); transition: transform .65s cubic-bezier(.5,0,.2,1), opacity .3s ease; z-index: 3; filter: drop-shadow(0 1px 2px rgba(0,0,0,.35)); }
+.cursor .ico { width: 13px; height: 18px; transform-origin: 1.2px 1.2px; }
+@keyframes scTap { 0%, 100% { scale: 1; } 45% { scale: .9; } }
+/* 6 自動更新 */
+.sc-update .w6 { left: 0; top: 42px; width: 206px; padding: 9px 11px 12px; transition: opacity .55s var(--ease-out), transform .7s var(--ease-out), filter .4s ease; }
+.sc-update .w6 .bar { margin-top: 10px; }
+.noti { right: 0; top: 4px; min-width: 178px; max-width: 240px; box-sizing: border-box; padding: 8px 10px; display: flex; gap: 8px; align-items: center; border-radius: 11px; background: var(--noti); border: 1px solid var(--edge); box-shadow: var(--shadow);
+  opacity: 0; transform: translateX(22px); transition: opacity .4s ease, transform .6s var(--ease-out); z-index: 2; }
+.noti img { width: 24px; height: 24px; border-radius: 6px; flex: none; display: block; }
+.nt { position: relative; display: grid; flex: 1; height: 28px; min-width: 0; padding-right: 14px; }
+.nt .m { grid-area: 1 / 1; opacity: 0; transform: translateY(3px); transition: opacity .3s ease, transform .35s var(--ease-out); }
+.nt b { display: block; font-size: 10.5px; font-weight: 600; white-space: nowrap; }
+.nt small { display: block; font-size: 9.5px; color: var(--tx2); margin-top: 2px; white-space: nowrap; }
+.nt .m3 b { color: var(--ok); }
+.spin { position: absolute; right: 0; top: 2px; width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--track); border-top-color: var(--tx2); opacity: 0; transition: opacity .3s ease; }
+@keyframes scSpin { to { transform: rotate(360deg); } }
+.sc-update.s1 .t1 { opacity: 1; transform: none; }
+.sc-update.s2 .fp { width: 100%; }
+.sc-update.s3 .noti { opacity: 1; transform: none; }
+.sc-update.s3 .m1 { opacity: 1; transform: none; }
+.sc-update.s4 .t1 { opacity: 0; transform: translateY(-3px); }
+.sc-update.s4 .t3 { opacity: 1; transform: none; }
+.sc-update.s4 .tile { color: var(--ok); background: var(--okTint); }
+.sc-update.s4 .fo { opacity: 1; }
+.sc-update.s5 .m1 { opacity: 0; transform: translateY(-3px); }
+.sc-update.s5 .m2 { opacity: 1; transform: none; }
+.sc-update.s5 .spin { opacity: 1; animation: scSpin .8s linear infinite; }
+.sc-update.s5 .w6 { opacity: .45; filter: saturate(.5); }
+.sc-update.s6 .m2 { opacity: 0; transform: translateY(-3px); }
+.sc-update.s6 .m3 { opacity: 1; transform: none; }
+.sc-update.s6 .spin { opacity: 0; }
+.sc-update.s6 .w6 { opacity: 1; filter: none; }
+
+/* 更新紀錄 */
+.rel { list-style: none; margin: 0; padding: 0; }
+.rel > li { padding: 10px 0; border-bottom: 1px solid var(--line); }
+.rel > li:first-child { padding-top: 0; }
+.rel > li:last-child { border-bottom: 0; padding-bottom: 0; }
+.rel .rv { display: flex; align-items: baseline; gap: 10px; }
+.rel .rv b { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.rel .rv span { font-size: 12px; color: var(--mute); letter-spacing: .04em; }
+.rel .rd { font-size: 13.5px; color: var(--ink-2); }
+.rel .rd ul { margin: 4px 0 0; padding-left: 1.2em; }
+.rel .rd p { margin: 4px 0 0; }
+.rel .rd h2 { display: none; }
+.rel-empty { color: var(--ink-2); font-size: 14px; margin: 0; }
+.free { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: .08em; color: var(--ai); border: 1px solid rgba(68,97,123,.45); border-radius: 999px; padding: 0 8px; margin-left: 8px; vertical-align: 3px; }
+
+/* 從備份都ok 核心畫面借用的零件 */
+.mt { position: relative; height: 20px; display: flex; align-items: center; }
+.mt .wdots { margin: 0; }
+.mt .ttl { position: absolute; left: 0; right: 0; text-align: center; font-size: 9px; font-weight: 600; color: var(--tx2); }
+.sprite { left: 0; top: 0; width: 22px; height: 26px; z-index: 3; transition: transform .7s cubic-bezier(.3,.7,.3,1), opacity .35s ease; filter: drop-shadow(0 4px 8px rgba(0,0,0,.35)); }
+.mi b { font-weight: 500; }
+.mbar .clk { color: var(--tx2); }
+.prw .mt .ttl { left: 30px; right: auto; text-align: left; }
+
+footer { padding: 6px 2px 40px; font-size: 12.5px; color: var(--mute); letter-spacing: .05em; display: flex; gap: 20px; flex-wrap: wrap; }
+footer a { text-decoration: none; }
+footer a:hover { color: var(--ink); }
+
+/* 進場 */
+.js .hero .ch { opacity: 0; filter: blur(10px); transform: translateY(.14em); }
+.js .hero .ch.in { opacity: 1; filter: blur(0); transform: none; transition: opacity .8s var(--ease-out), filter .8s var(--ease-out), transform .8s var(--ease-out); }
+.js .reveal { opacity: 0; filter: blur(6px); transform: translateY(8px); }
+.js .reveal.in { opacity: 1; filter: blur(0); transform: none; transition: opacity .8s var(--ease-out), filter .8s var(--ease-out), transform .8s var(--ease-out); }
+
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-dl { border-left: 0; border-top: 1px solid var(--line-strong); }
+  .pair { grid-template-columns: 1fr; }
+  .feats { grid-template-columns: 1fr 1fr; }
+  .core { grid-template-columns: 1fr; }
+  .core .scene { grid-column: 1; grid-row: 1; height: 290px; margin: 14px 14px 0; }
+  .core-txt { grid-column: 1; grid-row: 2; padding: 16px 18px 18px; }
+  .feat:not(:nth-child(3n+1)) { border-left: 0; }
+  .feat:nth-child(2n) { border-left: 1px solid var(--line); }
+  .feat:nth-last-child(-n+3) { border-bottom: 1px solid var(--line); }
+  .feat:nth-last-child(-n+2) { border-bottom: 0; }
+}
+@media (max-width: 520px) {
+  .wrap { padding: 12px 12px 0; }
+  .hero-main { padding: 24px 20px 22px; }
+  /* 手機:橫向滑動,一次看一張多一點 */
+  .feats { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 84%; overflow-x: auto; scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .feats::-webkit-scrollbar { display: none; }
+  .feats .feat { scroll-snap-align: start; border-bottom: 0; border-left: 1px solid var(--line); }
+  .feats .feat:first-child { border-left: 0; }
+  .feat-ind { display: block; position: relative; width: 56px; height: 3px; margin: 2px auto 14px; border-radius: 2px; background: var(--line); overflow: hidden; }
+  .feat-ind i { position: absolute; left: 0; top: 0; bottom: 0; width: 30%; border-radius: 2px; background: var(--ink-2); }
+  .scene { height: 158px; }
+  .core .scene { height: 236px; }
+  .core-txt { padding: 14px 16px 16px; }
+  .top nav { gap: 12px; }
+  .lang-cur { font-size: 0; }
+  .lang-cur::after { content: attr(data-short); font-size: 13px; }
+  .lang-btn { padding: 3px 9px 3px 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; }
+  .app-icon { animation: none; opacity: 1; filter: none; transform: none; }
+  .js .hero .ch, .js .reveal, .result .inner { opacity: 1 !important; filter: none !important; transform: none !important; }
+}
+
+
+/* ===== 傳送都ok：小動畫配色（App 本身只有深色：黑色瀏海＋系統藍） ===== */
+:root { --ai: #2D4B67; }
+.free { color: var(--ai); border-color: rgba(45,75,103,.45); }
+.scene {
+  --bg: #141416; --grid: rgba(255,255,255,.05); --glow: rgba(10,132,255,.30);
+  --win: linear-gradient(165deg, #2B2B2E, #202023); --edge: rgba(255,255,255,.1); --shadow: 0 12px 26px rgba(0,0,0,.45);
+  --noti: linear-gradient(165deg, #333336, #28282B);
+  --tx: #F5F5F7; --tx2: rgba(245,245,247,.62); --tx3: rgba(245,245,247,.36);
+  --track: rgba(255,255,255,.14); --solid: rgba(255,255,255,.2); --zone: rgba(255,255,255,.06);
+  --pri: #0A84FF; --priT: #4DA3FF; --priTint: rgba(10,132,255,.2);
+  --ok: #30D158; --okTint: rgba(48,209,88,.15); --okLine: rgba(48,209,88,.36);
+  --ver: #FFD60A; --verT: #FFD60A; --verTint: rgba(255,214,10,.14); --verLine: rgba(255,214,10,.34);
+  --toastSh: 0 6px 14px rgba(0,0,0,.32);
+  --blue: #0A84FF; --green: #30D158; --ctl: #2C2C2E; --xm: #48484A;
+  --spring: cubic-bezier(.34, 1.22, .64, 1);
+}
+@media (prefers-color-scheme: light) { .scene { box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); } }
+
+/* 迷你選單列＋實體瀏海 */
+.mbar2 { left: 0; top: 0; height: 18px; border-radius: 6px 6px 0 0; background: var(--zone); }
+.mbar2 .ml { position: absolute; left: 8px; top: 0; height: 18px; display: flex; align-items: center; gap: 8px; font-size: 8.5px; color: var(--tx2); white-space: nowrap; }
+.mbar2 .ml b { color: var(--tx); font-weight: 600; }
+.mbar2 .mr { position: absolute; right: 8px; top: 0; height: 18px; display: flex; align-items: center; gap: 7px; font-size: 8.5px; color: var(--tx2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* 瀏海島：實體瀏海 62×18（舞台座標），依 data-st 長大縮小 */
+.isl { left: 50%; top: 0; width: 62px; height: 18px; margin-left: -31px; background: #000; border-radius: 0 0 6px 6px; z-index: 4; overflow: hidden;
+  transition: width .5s var(--spring), height .5s var(--spring), margin-left .5s var(--spring), border-radius .5s var(--spring), box-shadow .4s ease; }
+.isl > * { position: absolute; opacity: 0; transition: opacity .18s ease; }
+.isl[data-st="near"] { width: 124px; height: 26px; margin-left: -62px; border-radius: 0 0 9px 9px; box-shadow: 0 8px 18px rgba(0,0,0,.45); }
+.isl[data-st="open"] { width: 204px; height: 72px; margin-left: -102px; border-radius: 0 0 16px 16px; box-shadow: 0 12px 26px rgba(0,0,0,.55); }
+.isl[data-st="drop"], .isl[data-st="sent"], .isl[data-st="cancel"], .isl[data-st="fail"] { height: 32px; border-radius: 0 0 7px 7px; box-shadow: 0 8px 18px rgba(0,0,0,.45); }
+.isl[data-st="drop"] { width: 138px; margin-left: -69px; }
+.isl[data-st="sent"] { width: 158px; margin-left: -79px; }
+.isl[data-st="cancel"] { width: 96px; margin-left: -48px; }
+.isl[data-st="near"] .c-near, .isl[data-st="open"] .c-open,
+.isl[data-st="drop"] .c-drop, .isl[data-st="sent"] .c-sent, .isl[data-st="cancel"] .c-cancel { opacity: 1; transition: opacity .2s ease .12s; }
+
+.c-near { inset: 0; }
+.c-near .th { position: absolute; left: 9px; top: 6px; width: 12px; height: 14px; }
+.c-near .pl { position: absolute; right: 9px; top: 7px; width: 13px; height: 12px; color: var(--tx2); }
+
+.c-open { left: 0; top: 0; width: 204px; height: 72px; }
+.c-open .ttl { position: absolute; left: 10px; top: 4px; display: flex; align-items: center; gap: 4px; font-size: 8.5px; font-weight: 600; }
+.c-open .ttl .ico { width: 9px; height: 8px; }
+.c-open .cnt { position: absolute; right: 10px; top: 4px; font-size: 8px; color: var(--tx2); }
+.c-open .zone { position: absolute; left: 7px; top: 24px; width: 190px; height: 40px; border-radius: 11px; background: rgba(10,132,255,.16); box-shadow: inset 0 0 0 1px rgba(10,132,255,.9);
+  display: flex; align-items: center; gap: 7px; padding: 0 7px; box-sizing: border-box; }
+.c-open .zone .th { width: 20px; height: 24px; flex: none; }
+.c-open .zone b { display: block; font-size: 9px; font-weight: 600; white-space: nowrap; }
+.c-open .zone small { display: block; font-size: 7.5px; color: var(--tx2); white-space: nowrap; margin-top: 1px; }
+.c-open .zone .go { margin-left: auto; width: 18px; height: 18px; border-radius: 50%; background: var(--blue); display: grid; place-items: center; flex: none; }
+.c-open .zone .go .ico { width: 9px; height: 8px; color: #fff; }
+
+.pc { left: 0; right: 0; top: 18px; height: 14px; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 8.5px; font-weight: 600; white-space: nowrap; }
+.pc .th { width: 10px; height: 12px; }
+.pc .bd { width: 11px; height: 11px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+.pc .bd .ico { width: 7px; height: 7px; }
+.pc .bd.ok { background: var(--green); color: #000; }
+.pc .bd.x { background: var(--xm); color: #fff; }
+
+/* 檔案縮圖（白紙＋類型標籤） */
+.fthumb { display: block; }
+
+/* 拖曳中的檔案 */
+.sprite2 { left: 0; top: 0; width: 22px; height: 26px; z-index: 5; opacity: 0;
+  transition: transform .75s cubic-bezier(.45,.05,.25,1), opacity .3s ease; filter: drop-shadow(0 4px 8px rgba(0,0,0,.4)); }
+.sprite2 .fthumb { width: 22px; height: 26px; }
+
+/* Finder 視窗（拖曳來源） */
+.fwin { padding: 0 9px 9px; }
+.fwin .mt { height: 18px; }
+.fwin .files { display: flex; gap: 8px; padding-top: 6px; }
+.fwin .fi { width: 42px; text-align: center; font-size: 6.5px; color: var(--tx2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fwin .fi .fthumb { width: 20px; height: 24px; margin: 0 auto 3px; }
+.fwin .fi.on .fthumb { opacity: .35; }
+
+/* 系統 AirDrop 選人視窗（示意） */
+.adw { padding: 7px 10px 7px; text-align: center; }
+.adw .ah { font-size: 9px; font-weight: 600; }
+.adw .as { font-size: 7.5px; color: var(--tx2); margin-top: 1px; }
+.adw .ppl { display: flex; justify-content: center; gap: 12px; margin: 6px 0 5px; }
+.adw .p { width: 40px; font-size: 7.5px; color: var(--tx); position: relative; }
+.adw .av { width: 24px; height: 24px; border-radius: 50%; margin: 0 auto 2px; display: grid; place-items: center; font-size: 10px; font-weight: 600; color: #fff; position: relative; }
+.adw .av.a1 { background: linear-gradient(160deg, #FF9F0A, #FF6B3D); }
+.adw .av.a2 { background: linear-gradient(160deg, #64D2FF, #0A84FF); }
+.adw .av.a3 { background: linear-gradient(160deg, #BF5AF2, #7D4CDB); }
+.adw .av::after { content: ""; position: absolute; inset: -3px; border-radius: 50%; border: 2px solid var(--blue); border-right-color: transparent; border-bottom-color: transparent; opacity: 0; }
+.adw .st { display: grid; height: 10px; }
+.adw .st span { grid-area: 1 / 1; opacity: 0; transition: opacity .25s ease; color: var(--tx2); }
+.adw .st .s0 { opacity: 1; color: var(--tx); }
+.adw .btn { display: inline-block; font-size: 8px; padding: 2px 12px; border-radius: 6px; background: var(--ctl); color: var(--tx); transition: background .2s ease; }
+.adw { opacity: 0; transform: translateY(8px) scale(.97); transition: opacity .35s ease, transform .5s var(--spring); }
+@keyframes adSpin { to { transform: rotate(360deg); } }
+
+/* 選單列進度環（迷你） */
+.ring { width: 11px; height: 11px; display: block; color: var(--tx); }
+.ring .tk, .ring .pg { fill: none; stroke-width: 1.6; }
+.ring .tk { stroke: var(--track); opacity: 0; transition: opacity .2s ease; }
+.ring .pg { stroke: currentColor; stroke-linecap: round; stroke-dasharray: 100 100; stroke-dashoffset: 100; opacity: 0; transition: stroke-dashoffset .3s ease, opacity .2s ease; }
+.ring .pl { transform-origin: 12px 12px; transform: scale(1); transition: transform .35s var(--spring), opacity .15s ease; }
+.ring .ck { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transition: opacity .15s ease; }
+.ring[data-st="begin"] .tk, .ring[data-st="run"] .tk, .ring[data-st="done"] .tk { opacity: 1; }
+.ring[data-st="begin"] .pg, .ring[data-st="run"] .pg, .ring[data-st="done"] .pg { opacity: 1; }
+.ring[data-st="begin"] .pl, .ring[data-st="run"] .pl { transform: scale(.5); }
+.ring[data-st="run"] .pg { stroke-dashoffset: 10; transition: stroke-dashoffset 2.4s cubic-bezier(.25,.1,.25,1), opacity .2s ease; }
+.ring[data-st="done"] .pg { stroke-dashoffset: 0; }
+.ring[data-st="done"] .pl { opacity: 0; transform: scale(.5); }
+.ring[data-st="done"] .ck { opacity: 1; transition-delay: .3s; }
+
+/* ===== 0 核心流程：拖到瀏海 → 展開 → 放開 → 選人 → 傳完自己收 ===== */
+.sc-core .stage { width: 340px; height: 240px; margin: -120px 0 0 -170px; }
+.sc-core .mbar2 { width: 340px; }
+.sc-core .fwin { left: 14px; top: 166px; width: 156px; }
+.sc-core .adw { left: 116px; top: 52px; width: 150px; }
+.sc-core .cursor { transform: translate(60px, 214px); }
+.sc-core .sprite2 { transform: translate(36px, 190px); }
+.sc-core.s1 .cursor { opacity: 1; transform: translate(48px, 202px); }
+.sc-core.s2 .sprite2 { opacity: 1; transform: translate(150px, 46px); }
+.sc-core.s2 .cursor { transform: translate(162px, 60px); }
+.sc-core.s2 .fwin .fi.f1 { }
+.sc-core.s2 .fwin .fi.f1 .fthumb { opacity: .35; }
+.sc-core.s3 .sprite2 { transform: translate(214px, 34px); }
+.sc-core.s3 .cursor { transform: translate(226px, 48px); }
+.sc-core.s4 .sprite2 { opacity: 0; transform: translate(180px, 16px) scale(.4); transition: transform .35s ease, opacity .3s ease; }
+.sc-core.s4 .cursor { transform: translate(210px, 120px); }
+.sc-core.s5 .adw { opacity: 1; transform: none; }
+.sc-core.s6 .cursor { transform: translate(191px, 100px); }
+.sc-core.s7 .cursor { animation: scTap .3s ease; }
+.sc-core.s7 .adw .p2 .av::after { opacity: 1; animation: adSpin .9s linear infinite; }
+.sc-core.s7 .adw .p2 .st .s0 { opacity: 0; }
+.sc-core.s7 .adw .p2 .st .s1 { opacity: 1; }
+.sc-core.s7 .adw .btn { color: var(--tx); }
+.sc-core.s8 .adw .p2 .st .s1 { opacity: 0; }
+.sc-core.s8 .adw .p2 .st .s2 { opacity: 1; color: var(--tx); }
+.sc-core.s8 .adw .p2 .av::after { opacity: 0; animation: none; }
+.sc-core.s8 .cursor { transform: translate(250px, 200px); opacity: 0; }
+.sc-core.s9 .adw { opacity: 0; transform: scale(.94); transition: opacity .3s ease, transform .35s ease; }
+.sc-core .adw .btnd { display: none; }
+.sc-core.s8 .adw .btnc { display: none; }
+.sc-core.s8 .adw .btnd { display: inline-block; }
+.sc-core.s1 ~ .core-txt .st1, .sc-core.s4 ~ .core-txt .st2, .sc-core.s8 ~ .core-txt .st3 { color: var(--ink); }
+.sc-core.s4 ~ .core-txt .st1, .sc-core.s8 ~ .core-txt .st2 { color: var(--mute); }
+
+/* ===== 1 靠近才提示、碰到才展開、拖走就收回 ===== */
+.sc-near .mbar2 { width: 240px; }
+.sc-near .sprite2 { transform: translate(109px, 128px); }
+.sc-near .cursor { transform: translate(121px, 150px); }
+.sc-near.s1 .sprite2 { opacity: 1; transform: translate(109px, 104px); }
+.sc-near.s1 .cursor { opacity: 1; transform: translate(121px, 118px); }
+.sc-near.s2 .sprite2 { transform: translate(109px, 56px); }
+.sc-near.s2 .cursor { transform: translate(121px, 70px); }
+.sc-near.s3 .sprite2 { transform: translate(162px, 32px); }
+.sc-near.s3 .cursor { transform: translate(174px, 46px); }
+.sc-near.s4 .sprite2 { transform: translate(150px, 70px); }
+.sc-near.s4 .cursor { transform: translate(162px, 84px); }
+.sc-near.s5 .sprite2 { transform: translate(178px, 108px); }
+.sc-near.s5 .cursor { transform: translate(190px, 122px); }
+.sc-near .cap { top: 112px; }
+.sc-near.s2 .cap .c1, .sc-near.s3 .cap .c2, .sc-near.s4 .cap .c3 { opacity: 1; transform: none; }
+.sc-near.s3 .cap .c1, .sc-near.s4 .cap .c2, .sc-near.s5 .cap .c3 { opacity: 0; transform: translateY(-4px); }
+
+/* ===== 2 選單列進度環 ===== */
+.sc-ring .mbar2 { width: 240px; }
+.sc-ring .mbar2 .ring { width: 11px; height: 11px; }
+.sc-ring .big { left: 50%; top: 34px; width: 62px; height: 62px; margin-left: -31px; }
+.sc-ring .big .ring { width: 62px; height: 62px; }
+.sc-ring .big .ring .tk, .sc-ring .big .ring .pg { stroke-width: 1.7; }
+.sc-ring .big .ring .ck { stroke-width: 2; }
+.sc-ring .pct { left: 0; right: 0; top: 104px; text-align: center; font-size: 10px; color: var(--tx2); font-variant-numeric: tabular-nums; }
+.sc-ring .pct > span { position: absolute; left: 0; right: 0; opacity: 0; transition: opacity .25s ease; }
+.sc-ring.s2 .pct .p1 { opacity: 1; }
+.sc-ring.s4 .pct .p1 { opacity: 0; }
+.sc-ring.s4 .pct .p2 { opacity: 1; color: var(--tx); }
+.sc-ring.s5 .pct .p2 { opacity: 0; }
+
+/* ===== 3 傳完自動關掉 AirDrop 視窗 ===== */
+.sc-close .mbar2 { width: 240px; }
+.sc-close .adw { left: 50%; top: 20px; width: 150px; margin-left: -75px; }
+.sc-close.s1 .adw { opacity: 1; transform: none; }
+.sc-close .adw .p2 .av::after { opacity: 1; animation: adSpin .9s linear infinite; }
+.sc-close .adw .p2 .st .s0 { opacity: 0; }
+.sc-close .adw .p2 .st .s1 { opacity: 1; }
+.sc-close.s2 .adw .p2 .st .s1 { opacity: 0; }
+.sc-close.s2 .adw .p2 .st .s2 { opacity: 1; color: var(--tx); }
+.sc-close.s2 .adw .p2 .av::after { opacity: 0; animation: none; }
+.sc-close .adw .btnd { display: none; }
+.sc-close.s2 .adw .btnc { display: none; }
+.sc-close.s2 .adw .btnd { display: inline-block; }
+.sc-close.s3 .adw { opacity: 0; transform: scale(.94); transition: opacity .3s ease, transform .35s ease; }
+
+/* ===== 4 選單也能傳 ===== */
+.sc-menu .mbar2 { width: 240px; }
+.sc-menu .mbar2 .mr .ico { width: 10px; height: 9px; color: var(--tx); }
+.sc-menu .mbar2 .mr .hit { padding: 1px 3px; border-radius: 3px; transition: background .2s ease; }
+.sc-menu.s2 .mbar2 .mr .hit { background: rgba(255,255,255,.16); }
+.sc-menu .menu { right: 4px; top: 21px; width: 150px; padding: 4px; border-radius: 8px; background: rgba(40,40,43,.96); border: 1px solid var(--edge); box-shadow: var(--shadow);
+  opacity: 0; transform: translateY(-4px); transition: opacity .2s ease, transform .3s var(--ease-out); z-index: 3; }
+.sc-menu.s2 .menu { opacity: 1; transform: none; }
+.sc-menu.s4 .menu { opacity: 0; transition: opacity .15s ease; }
+.sc-menu .menu .it { display: flex; justify-content: space-between; align-items: center; height: 15px; padding: 0 6px; border-radius: 4px; font-size: 8px; white-space: nowrap; transition: background .15s ease; }
+.sc-menu .menu .it kbd { font-family: var(--font); font-size: 7.5px; color: var(--tx3); }
+.sc-menu .menu .it.dim { color: var(--tx3); }
+.sc-menu .menu .hd { font-size: 7px; color: var(--tx3); font-weight: 600; padding: 3px 6px 1px; }
+.sc-menu .menu .sep { height: 1px; background: var(--edge); margin: 3px 4px; }
+.sc-menu .menu .rc { display: flex; gap: 6px; align-items: center; padding: 2px 6px; font-size: 7.5px; }
+.sc-menu .menu .rc .fthumb { width: 12px; height: 14px; }
+.sc-menu .menu .rc small { display: block; font-size: 6.5px; color: var(--green); }
+.sc-menu .menu .rc small.g { color: var(--tx3); }
+.sc-menu.s3 .menu .it.go { background: var(--blue); color: #fff; }
+.sc-menu.s3 .menu .it.go kbd { color: rgba(255,255,255,.7); }
+.sc-menu .cursor { transform: translate(214px, 96px); }
+.sc-menu.s1 .cursor { opacity: 1; transform: translate(206px, 8px); }
+.sc-menu.s3 .cursor { transform: translate(176px, 28px); }
+.sc-menu.s4 .cursor { animation: scTap .3s ease; }
+.sc-menu.s5 .cursor { opacity: 0; transform: translate(190px, 90px); }
+
+/* ===== 5 隨時取消 ===== */
+.sc-cancel .mbar2 { width: 240px; }
+.sc-cancel .adw { left: 50%; top: 20px; width: 150px; margin-left: -75px; }
+.sc-cancel.s1 .adw { opacity: 1; transform: none; }
+.sc-cancel .cursor { transform: translate(160px, 140px); }
+.sc-cancel.s1 .cursor { opacity: 1; transform: translate(150px, 126px); }
+.sc-cancel.s2 .cursor { transform: translate(118px, 113px); }
+.sc-cancel.s2 .adw .btnc { background: #3A3A3D; }
+.sc-cancel.s3 .cursor { animation: scTap .3s ease; }
+.sc-cancel.s3 .adw { opacity: 0; transform: scale(.94); transition: opacity .3s ease, transform .35s ease; }
+.sc-cancel.s4 .cursor { opacity: 0; }
+.sc-cancel .adw .btnd { display: none; }
+
+/* ===== 6 自動更新（沿用備份都ok／監看都ok 的畫面） ===== */
+.sc-update .w6 { left: 0; top: 40px; width: 168px; }
+.sc-update .w6 .tile { color: var(--tx); background: var(--track); }
+.sc-update .w6 .tile .ico { width: 13px; height: 11px; }
+
+/* 權限 */
+.perm { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+.perm li { counter-increment: s; display: grid; grid-template-columns: 30px minmax(0, 1fr); padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--ink-2); }
+.perm li:first-child { padding-top: 0; }
+.perm li::before { content: counter(s); color: var(--ink); font-size: 17px; line-height: 1.5; }
+.perm b { color: var(--ink); }
+.perm-note { font-size: 13.5px; color: var(--ink-2); margin: 12px 0 0; }
+.sc-update .fp { width: 28%; transition: width 4.6s cubic-bezier(.3,.1,.6,1), opacity .3s ease; }
+.scene .cursor { z-index: 6; }
+
+</style>
+</head>
+<body>
+<script>document.documentElement.classList.add('js');</script>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-plane" viewBox="12 17 76 68"><path d="M16 48 84 20 48 58Z" style="fill:currentColor"/><path d="M48 58 84 20 62 82Z" style="fill:currentColor;opacity:.55"/><path d="M48 58 52 74 60 66Z" style="fill:currentColor;opacity:.35"/></symbol>
+  <symbol id="i-check" viewBox="0 0 16 16"><path d="M3.2 8.6l3.2 3 6.4-7" style="fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"/></symbol>
+  <symbol id="i-x" viewBox="0 0 16 16"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" style="fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round"/></symbol>
+  <symbol id="i-cursor" viewBox="0 0 13 18"><path d="M1.2 1.2v13.6l3.3-3.1 2.2 5.1 2.2-.95-2.2-5.05h4.6Z" style="fill:#fff;stroke:#111;stroke-width:1;stroke-linejoin:round"/></symbol>
+  <symbol id="i-file" viewBox="0 0 22 26"><path d="M3 1h11l6 6v16.5A1.5 1.5 0 0 1 18.5 25h-15A1.5 1.5 0 0 1 2 23.5v-21A1.5 1.5 0 0 1 3 1Z" style="fill:#F5F5F7"/><path d="M14 1v4.5A1.5 1.5 0 0 0 15.5 7H20" style="fill:#D6D6DA"/><rect x="4.5" y="15" width="13" height="5.5" rx="1.2" style="fill:#5E5CE6"/><path d="M8.6 9.6l4.8 2.8-4.8 2.8Z" transform="translate(0 -1.4) scale(1)" style="fill:#8E8E93"/></symbol>
+  <symbol id="i-file2" viewBox="0 0 22 26"><path d="M3 1h11l6 6v16.5A1.5 1.5 0 0 1 18.5 25h-15A1.5 1.5 0 0 1 2 23.5v-21A1.5 1.5 0 0 1 3 1Z" style="fill:#F5F5F7"/><path d="M14 1v4.5A1.5 1.5 0 0 0 15.5 7H20" style="fill:#D6D6DA"/><rect x="4.5" y="9" width="13" height="10" rx="1.5" style="fill:#7FB3D5"/><path d="M4.5 19l4.2-4.4 3 3 2.1-2 3.7 3.4Z" style="fill:#3E7CA8"/></symbol>
+  <symbol id="i-gauge" viewBox="12 17 76 68"><path d="M16 48 84 20 48 58Z" style="fill:currentColor"/><path d="M48 58 84 20 62 82Z" style="fill:currentColor;opacity:.55"/></symbol>
+</svg>
+
+<header class="top">
+  <span class="brand"><img src="icons/favicon-64.png" alt="" width="20" height="20"><span>傳送都ok</span></span>
+  <nav><a href="manual/">使用說明</a><a href="privacy/">隱私權政策</a></nav>
+</header>
+
+<main class="wrap">
+  <div class="block hero">
+    <div class="hero-main">
+      <img class="app-icon" src="icons/app-icon-256.png" alt="傳送都ok App 圖示" width="64" height="64">
+      <p class="for reveal"><span>把 AirDrop 放進 Mac 瀏海</span><span class="free">免費</span></p>
+      <h1 id="title">傳送都ok</h1>
+      <p class="sub reveal">拖到瀏海，放開就傳。<br>AirDrop 本來就該這麼快。</p>
+    </div>
+    <div class="hero-dl reveal">
+      <div class="k">最新版本</div>
+      <div class="ver" id="dlVer">—</div>
+      <dl class="kv">
+        <dt>檔案大小</dt><dd id="dlSize">—</dd>
+        <dt>發布日期</dt><dd id="dlDate">—</dd>
+        <dt>系統需求</dt><dd>macOS 13 以上</dd>
+        <dt>價格</dt><dd>免費</dd>
+        <dt>更新方式</dt><dd>App 內自動更新</dd>
+      </dl>
+      <a class="pill line" id="dlBtn" href="#" aria-disabled="true">即將開放下載</a>
+      <div class="muted" id="dlMeta" hidden>已通過 Apple 公證</div>
+    </div>
+  </div>
+
+  <section class="block reveal">
+    <div class="block-h"><h2>它做什麼</h2><span class="meta">少點三下，直接送出</span></div>
+    <div class="core">
+      <div class="scene sc-core big" data-scene="core" aria-hidden="true"><div class="stage">
+        <div class="mbar2 rise"><span class="ml"><b>Finder</b><span>檔案</span><span>編輯</span><span>顯示方式</span></span>
+          <span class="mr"><svg class="ring" viewBox="0 0 24 24" data-states="s5:begin,s7:run,s8:done,s11:idle"><circle class="tk" cx="12" cy="12" r="10"/><circle class="pg" cx="12" cy="12" r="10" pathLength="100" transform="rotate(-90 12 12)"/><g class="pl"><use href="#i-plane" x="2" y="3" width="20" height="18"/></g><path class="ck" d="M7.6 12.4l3 3 6-6.8"/></svg><span>14:02</span></span></div>
+        <div class="mwin fwin rise" style="--dl:.06s"><div class="mt"><span class="wdots"><i></i><i></i><i></i></span><span class="ttl">下載項目</span></div>
+          <div class="files"><div class="fi f1"><svg class="fthumb"><use href="#i-file"/></svg>IMG_0412.MOV</div><div class="fi"><svg class="fthumb"><use href="#i-file2"/></svg>DSC09412.JPG</div><div class="fi"><svg class="fthumb"><use href="#i-file2"/></svg>DSC09413.JPG</div></div></div>
+        <div class="isl" data-states="s2:near,s3:open,s4:drop,s5:idle,s9:sent,s11:idle">
+          <div class="c-near"><svg class="th"><use href="#i-file"/></svg><svg class="pl"><use href="#i-plane"/></svg></div>
+          <div class="c-open"><div class="ttl"><svg class="ico"><use href="#i-plane"/></svg>AirDrop</div><div class="cnt">1 個項目</div>
+            <div class="zone"><svg class="th"><use href="#i-file"/></svg><div><b>放開，用 AirDrop 傳送</b><small>IMG_0412.MOV · 84 MB</small></div><span class="go"><svg class="ico"><use href="#i-plane"/></svg></span></div></div>
+          <div class="pc c-drop"><svg class="th"><use href="#i-file"/></svg><span>正在打開 AirDrop…</span></div>
+          <div class="pc c-sent"><span class="bd ok"><svg class="ico"><use href="#i-check"/></svg></span><span>已用 AirDrop 送出 1 個項目</span></div>
+        </div>
+        <div class="mwin adw"><div class="ah">AirDrop</div><div class="as">選擇要傳給誰</div>
+          <div class="ppl">
+            <div class="p p1"><div class="av a1">涵</div>涵涵<div class="st"><span class="s0"></span></div></div>
+            <div class="p p2"><div class="av a2">F</div>Felix<div class="st"><span class="s0"></span><span class="s1">等待中…</span><span class="s2">已傳送</span></div></div>
+            <div class="p p3"><div class="av a3">i</div>iPad<div class="st"><span class="s0"></span></div></div>
+          </div>
+          <span class="btn btnc">取消</span><span class="btn btnd">完成</span></div>
+        <div class="sprite2"><svg class="fthumb"><use href="#i-file"/></svg></div>
+        <div class="cursor"><svg class="ico"><use href="#i-cursor"/></svg></div>
+      </div></div>
+      <div class="core-txt">
+        <div class="core-h">拖到瀏海，<br>放開就傳。</div>
+        <p class="core-d">不用右鍵、不用找分享選單，檔案拖上去就好。</p>
+        <ol class="steps">
+          <li class="st1"><b>拖到瀏海</b><span>靠近時瀏海先探出頭，碰到就展開成投放區</span></li>
+          <li class="st2"><b>放開、點人</b><span>系統的 AirDrop 視窗跳出來，點一下要傳給誰</span></li>
+          <li class="st3"><b>傳完自己收</b><span>選單列的進度環跑完，AirDrop 視窗自動關掉</span></li>
+        </ol>
+      </div>
+    </div>
+    <div class="feats" id="feats">
+
+      <div class="feat">
+        <div class="scene sc-near" data-scene="near" aria-hidden="true"><div class="stage">
+          <div class="mbar2 rise"><span class="ml"><b>Finder</b><span>檔案</span></span><span class="mr"><span>14:02</span></span></div>
+          <div class="isl" data-states="s2:near,s3:open,s4:near,s5:idle">
+            <div class="c-near"><svg class="th"><use href="#i-file"/></svg><svg class="pl"><use href="#i-plane"/></svg></div>
+            <div class="c-open"><div class="ttl"><svg class="ico"><use href="#i-plane"/></svg>AirDrop</div><div class="cnt">1 個項目</div>
+              <div class="zone"><svg class="th"><use href="#i-file"/></svg><div><b>放開，用 AirDrop 傳送</b><small>IMG_0412.MOV · 84 MB</small></div><span class="go"><svg class="ico"><use href="#i-plane"/></svg></span></div></div>
+          </div>
+          <div class="cap"><span class="c1">靠近：瀏海先探出頭</span><span class="c2">碰到：展開成投放區</span><span class="c3">拖走：自己收回，不會誤傳</span></div>
+          <div class="sprite2"><svg class="fthumb"><use href="#i-file"/></svg></div>
+          <div class="cursor"><svg class="ico"><use href="#i-cursor"/></svg></div>
+        </div></div>
+        <div class="h">靠近才提示，碰到才展開</div><div class="d">只認拖曳中的檔案；路過不會亂跳，拖走就自己收回。</div>
+      </div>
+
+      <div class="feat">
+        <div class="scene sc-ring" data-scene="ring" aria-hidden="true"><div class="stage">
+          <div class="mbar2 rise"><span class="ml"><b>Finder</b><span>檔案</span></span>
+            <span class="mr"><svg class="ring" viewBox="0 0 24 24" data-states="s2:begin,s3:run,s4:done,s5:idle"><circle class="tk" cx="12" cy="12" r="10"/><circle class="pg" cx="12" cy="12" r="10" pathLength="100" transform="rotate(-90 12 12)"/><g class="pl"><use href="#i-plane" x="2" y="3" width="20" height="18"/></g><path class="ck" d="M7.6 12.4l3 3 6-6.8"/></svg><span>14:02</span></span></div>
+          <div class="big rise" style="--dl:.06s"><svg class="ring" viewBox="0 0 24 24" data-states="s2:begin,s3:run,s4:done,s5:idle"><circle class="tk" cx="12" cy="12" r="10"/><circle class="pg" cx="12" cy="12" r="10" pathLength="100" transform="rotate(-90 12 12)"/><g class="pl"><use href="#i-plane" x="2" y="3" width="20" height="18"/></g><path class="ck" d="M7.6 12.4l3 3 6-6.8"/></svg></div>
+          <div class="pct"><span class="p1"><span data-from="0" data-to="90" data-at="s3" data-ms="2400" data-fmt="傳送中 {n}%">傳送中 0%</span></span><span class="p2">已送出</span></div>
+        </div></div>
+        <div class="h">選單列看進度</div><div class="d">放開後紙飛機縮進圈裡跑進度，傳完補滿一圈換成勾勾。</div>
+      </div>
+
+      <div class="feat">
+        <div class="scene sc-close" data-scene="close" aria-hidden="true"><div class="stage">
+          <div class="mbar2 rise"><span class="ml"><b>Finder</b><span>檔案</span></span><span class="mr"><span>14:02</span></span></div>
+          <div class="isl" data-states="s3:sent,s4:idle">
+            <div class="pc c-sent"><span class="bd ok"><svg class="ico"><use href="#i-check"/></svg></span><span>已用 AirDrop 送出 1 個項目</span></div>
+          </div>
+          <div class="mwin adw"><div class="ah">AirDrop</div><div class="as">選擇要傳給誰</div>
+            <div class="ppl">
+              <div class="p p1"><div class="av a1">涵</div>涵涵<div class="st"><span class="s0"></span></div></div>
+              <div class="p p2"><div class="av a2">F</div>Felix<div class="st"><span class="s0"></span><span class="s1">等待中…</span><span class="s2">已傳送</span></div></div>
+            </div>
+            <span class="btn btnc">取消</span><span class="btn btnd">完成</span></div>
+        </div></div>
+        <div class="h">傳完自動關視窗</div><div class="d">對方收下後，AirDrop 視窗自己關掉，不用再按「完成」。</div>
+      </div>
+
+      <div class="feat">
+        <div class="scene sc-menu" data-scene="menu" aria-hidden="true"><div class="stage">
+          <div class="mbar2 rise"><span class="ml"><b>Finder</b><span>檔案</span></span><span class="mr"><span class="hit"><svg class="ico"><use href="#i-plane"/></svg></span><span>14:02</span></span></div>
+          <div class="isl" data-states="s4:drop,s5:idle">
+            <div class="pc c-drop"><svg class="th"><use href="#i-file2"/></svg><span>正在打開 AirDrop…</span></div>
+          </div>
+          <div class="menu">
+            <div class="it go">傳送檔案…<kbd>⌘O</kbd></div>
+            <div class="it">傳送剪貼簿的檔案<kbd>⌃⌥V</kbd></div>
+            <div class="sep"></div>
+            <div class="hd">最近傳送</div>
+            <div class="rc"><svg class="fthumb"><use href="#i-file2"/></svg><div>DSC09412.ARW 等 3 個<small>已送出 · 10:14</small></div></div>
+            <div class="rc"><svg class="fthumb"><use href="#i-file"/></svg><div>IMG_0412.MOV<small class="g">已送出 · 昨天</small></div></div>
+          </div>
+          <div class="cursor"><svg class="ico"><use href="#i-cursor"/></svg></div>
+        </div></div>
+        <div class="h">選單也能傳</div><div class="d">不想拖曳時，從選單列選檔案、傳剪貼簿裡的檔案，或把最近傳過的再傳一次。</div>
+      </div>
+
+      <div class="feat">
+        <div class="scene sc-cancel" data-scene="cancel" aria-hidden="true"><div class="stage">
+          <div class="mbar2 rise"><span class="ml"><b>Finder</b><span>檔案</span></span><span class="mr"><span>14:02</span></span></div>
+          <div class="isl" data-states="s3:cancel,s4:idle">
+            <div class="pc c-cancel"><span class="bd x"><svg class="ico"><use href="#i-x"/></svg></span><span>沒有傳送</span></div>
+          </div>
+          <div class="mwin adw"><div class="ah">AirDrop</div><div class="as">選擇要傳給誰</div>
+            <div class="ppl">
+              <div class="p p1"><div class="av a1">涵</div>涵涵<div class="st"><span class="s0"></span></div></div>
+              <div class="p p2"><div class="av a2">F</div>Felix<div class="st"><span class="s0"></span></div></div>
+            </div>
+            <span class="btn btnc">取消</span></div>
+          <div class="cursor"><svg class="ico"><use href="#i-cursor"/></svg></div>
+        </div></div>
+        <div class="h">改變主意也沒關係</div><div class="d">按取消或關掉視窗，瀏海會告訴你「沒有傳送」，什麼都不會送出去。</div>
+      </div>
+
+      <div class="feat">
+        <div class="scene sc-update" data-scene="update" aria-hidden="true"><div class="stage">
+          <div class="mwin w6 rise">
+            <div class="wdots"><i></i><i></i><i></i></div>
+            <div class="task">
+              <span class="tile"><svg class="ico"><use href="#i-plane"/></svg></span>
+              <div class="nm2">
+                <div class="t"><b>傳送都ok</b><span class="tags"><span class="tag pri t1">目前 1.0</span><span class="tag ok t3">1.1</span></span></div>
+                <span class="sub">選單列 · 執行中</span>
+              </div>
+            </div>
+            <div class="bar"><i class="fp"></i><i class="fo"></i></div>
+          </div>
+          <div class="noti">
+            <img src="icons/app-icon-256.png" alt="" width="24" height="24">
+            <div class="nt">
+              <div class="m m1"><b>有新版本 1.1</b><small>點一下就更新</small></div>
+              <div class="m m2"><b>正在安裝 1.1</b><small>完成後自動重新開啟</small></div>
+              <div class="m m3"><b>已更新到 1.1</b><small>設定與紀錄都會保留</small></div>
+              <i class="spin"></i>
+            </div>
+          </div>
+        </div></div>
+        <div class="h">自動更新</div><div class="d">有新版本時在 App 內提示，一鍵更新，設定都會保留。</div>
+      </div>
+
+    </div>
+    <div class="feat-ind" aria-hidden="true"><i></i></div>
+  </section>
+
+  <div class="pair">
+    <section class="block reveal" id="releases">
+      <div class="block-h"><h2>更新紀錄</h2><span class="meta">與 App 內更新同步</span></div>
+      <div class="block-b">
+        <ol class="rel" id="relList" hidden></ol>
+        <p class="rel-empty" id="relEmpty">第一個版本即將發布，之後每次更新都會列在這裡。</p>
+      </div>
+    </section>
+
+    <section class="block reveal">
+      <div class="block-h"><h2>開始使用</h2><span class="meta">約一分鐘</span></div>
+      <div class="block-b">
+        <ol class="next">
+          <li><span>按「<b>下載</b>」，打開映像檔，把「傳送都ok」拖進「應用程式」資料夾。</span></li>
+          <li><span>第一次打開時系統會確認一次，按「<b>打開</b>」即可。選單列會出現紙飛機圖示。</span></li>
+          <li><span>依提示打開「<b>輔助使用</b>」權限，傳完才能自動關掉 AirDrop 視窗。</span></li>
+          <li><span>把檔案拖到螢幕上方的瀏海，放開，點要傳給誰。</span></li>
+        </ol>
+      </div>
+    </section>
+  </div>
+
+  <section class="block reveal">
+    <div class="block-h"><h2>權限</h2><span class="meta">都可以之後再開</span></div>
+    <div class="block-b">
+      <ol class="perm">
+        <li><span><b>輔助使用</b>（建議）：用來讀取系統 AirDrop 視窗的狀態，傳完自動按「完成」關掉視窗，並在瀏海顯示「已送出／沒有傳送」。沒有開也能傳送，只是要自己關視窗。只讀這個視窗，不會讀其他 App。</span></li>
+        <li><span><b>登入時自動開啟</b>（選用）：使用 macOS 的登入項目，隨時可以在選單裡關掉。</span></li>
+      </ol>
+      <p class="perm-note">不需要完整磁碟取用、螢幕錄製、相機、麥克風、位置或聯絡人權限。檔案只透過 Apple 的 AirDrop 直接傳給對方，不會經過任何伺服器。</p>
+    </div>
+  </section>
+
+  <footer>
+    <a href="manual/">使用說明</a>
+    <a href="privacy/">隱私權政策</a>
+    <span>© 2026 傳送都ok</span>
+  </footer>
+</main>
+
+<script>
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // 開場：標題逐字浮現 → 其餘依序淡入（同備份都ok／監看都ok）
+  var title = document.getElementById('title');
+  var text = title.textContent;
+  title.textContent = '';
+  var chars = [];
+  Array.from(text).forEach(function (c) {
+    var s = document.createElement('span');
+    s.className = 'ch'; s.textContent = c === ' ' ? ' ' : c;
+    title.appendChild(s); chars.push(s);
+  });
+  var reveals = Array.from(document.querySelectorAll('.reveal'));
+  if (reduce) {
+    chars.concat(reveals).forEach(function (el) { el.classList.add('in'); });
+  } else {
+    requestAnimationFrame(function () {
+      chars.forEach(function (s, i) { setTimeout(function () { s.classList.add('in'); }, 450 + i * 70); });
+      var after = 450 + chars.length * 70 + 450;
+      reveals.forEach(function (el, i) { setTimeout(function () { el.classList.add('in'); }, after + i * 150); });
+    });
+  }
+
+  // 下載：讀最新版本資訊（latest.json，發版腳本產生）；還沒發版時維持「即將開放下載」
+  fetch('latest.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+    if (!d || !d.file) return;
+    var b = document.getElementById('dlBtn');
+    b.href = d.file;
+    b.removeAttribute('aria-disabled');
+    b.textContent = '下載';
+    document.getElementById('dlVer').textContent = d.version || '—';
+    document.getElementById('dlSize').textContent = d.size || '—';
+    document.getElementById('dlDate').textContent = d.date || '—';
+    if (d.notarized !== false) document.getElementById('dlMeta').hidden = false;
+  }).catch(function () {});
+
+  // 更新紀錄：直接讀 App 自動更新用的 appcast.xml，網頁和 App 內看到的是同一份
+  fetch('appcast.xml', { cache: 'no-store' }).then(function (r) { return r.ok ? r.text() : null; }).then(function (xml) {
+    if (!xml) return;
+    var doc = new DOMParser().parseFromString(xml, 'application/xml');
+    var items = Array.prototype.slice.call(doc.getElementsByTagName('item'), 0, 4);
+    if (!items.length) return;
+    var list = document.getElementById('relList');
+    items.forEach(function (it) {
+      var v = (it.getElementsByTagNameNS('*', 'shortVersionString')[0] || it.getElementsByTagName('title')[0] || {}).textContent || '';
+      var pd = (it.getElementsByTagName('pubDate')[0] || {}).textContent || '';
+      var dt = pd ? new Date(pd) : null;
+      var ds = dt && !isNaN(dt) ? dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0') : '';
+      var desc = (it.getElementsByTagName('description')[0] || {}).textContent || '';
+      var li = document.createElement('li');
+      li.innerHTML = '<div class="rv"><b></b><span></span></div><div class="rd"></div>';
+      li.querySelector('b').textContent = v;
+      li.querySelector('span').textContent = ds;
+      li.querySelector('.rd').innerHTML = desc;
+      list.appendChild(li);
+    });
+    list.hidden = false;
+    document.getElementById('relEmpty').hidden = true;
+  }).catch(function () {});
+})();
+
+// 功能小動畫：每個畫面照時間表依序加上 s1、s2…（累加），過場交給 CSS；捲出畫面或切到別的分頁就暫停（同監看都ok）
+// 有 data-states="s2:near,s3:open" 的元素（瀏海島、進度環），走到那一步就把 data-st 換成對應的狀態
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var PLAN = {
+    core: [15200, [150, 's1'], [1000, 's2'], [1900, 's3'], [3000, 's4'], [3900, 's5'], [5300, 's6'], [6100, 's7'], [8800, 's8'], [9500, 's9'], [11800, 's11'], [14000, 'out']],
+    near: [9200, [150, 's1'], [900, 's2'], [2300, 's3'], [4300, 's4'], [5600, 's5'], [8300, 'out']],
+    ring: [8200, [150, 's1'], [700, 's2'], [1100, 's3'], [4300, 's4'], [6200, 's5'], [7400, 'out']],
+    close: [8000, [150, 's1'], [1900, 's2'], [2900, 's3'], [5400, 's4'], [7200, 'out']],
+    menu: [8400, [150, 's1'], [800, 's2'], [1800, 's3'], [2800, 's4'], [5400, 's5'], [7600, 'out']],
+    cancel: [7800, [150, 's1'], [1200, 's2'], [2100, 's3'], [4400, 's4'], [7000, 'out']],
+    update: [9500, [150, 's1'], [400, 's2'], [1200, 's3'], [5100, 's4'], [5700, 's5'], [7000, 's6'], [8700, 'out']]
+  };
+  var scenes = Array.prototype.slice.call(document.querySelectorAll('.scene[data-scene]'));
+  if (!scenes.length) return;
+
+  function Runner(el, plan) {
+    var loop = plan[0], steps = plan.slice(1);
+    var names = steps.map(function (s) { return s[1]; });
+    var timers = [], playing = false, rafs = [];
+    var nums = Array.prototype.slice.call(el.querySelectorAll('[data-to]'));
+    var states = Array.prototype.slice.call(el.querySelectorAll('[data-states]')).map(function (e) {
+      var m = {};
+      e.getAttribute('data-states').split(',').forEach(function (p) { var kv = p.split(':'); m[kv[0].trim()] = kv[1].trim(); });
+      return { el: e, map: m };
+    });
+    function applyStep(step) { states.forEach(function (s) { if (s.map[step]) s.el.setAttribute('data-st', s.map[step]); }); }
+    function resetStates() { states.forEach(function (s) { s.el.setAttribute('data-st', 'idle'); }); }
+    function fmt(e, v) {
+      var dec = +e.getAttribute('data-dec') || 0;
+      var s = dec ? (v / Math.pow(10, dec)).toFixed(dec) : String(v);
+      return (e.getAttribute('data-fmt') || '{n}').replace('{n}', s);
+    }
+    function from(e) { return +e.getAttribute('data-from') || 0; }
+    function setNums(final) { nums.forEach(function (e) { e.textContent = fmt(e, final ? +e.getAttribute('data-to') : from(e)); }); }
+    function count(step) {
+      var list = nums.filter(function (e) { return e.getAttribute('data-at') === step; });
+      if (!list.length) return;
+      var t0 = performance.now();
+      function tick(now) {
+        var left = false;
+        list.forEach(function (e) {
+          var r = Math.min(1, (now - t0) / (+e.getAttribute('data-ms') || 1000));
+          var p = 1 - Math.pow(1 - r, 2.2);          // 跟進度環一樣先快後慢
+          var a = from(e), b = +e.getAttribute('data-to');
+          e.textContent = fmt(e, Math.round(a + (b - a) * p));
+          if (r < 1) left = true;
+        });
+        if (left && playing) rafs.push(requestAnimationFrame(tick));
+      }
+      rafs.push(requestAnimationFrame(tick));
+    }
+    function clear() { timers.forEach(clearTimeout); timers = []; rafs.forEach(cancelAnimationFrame); rafs = []; }
+    function reset() {
+      setNums(false);
+      el.classList.add('rs');
+      names.forEach(function (c) { el.classList.remove(c); });
+      resetStates();
+      void el.offsetWidth;
+      el.classList.remove('rs');
+    }
+    function cycle() {
+      clear(); reset();
+      steps.forEach(function (s) { timers.push(setTimeout(function () { el.classList.add(s[1]); applyStep(s[1]); count(s[1]); }, s[0])); });
+      timers.push(setTimeout(cycle, loop));
+    }
+    var first = true, frozen = false;
+    this.play = function (lag) {
+      if (playing || frozen) return; playing = true; el.classList.add('on');
+      if (first && lag) { first = false; reset(); timers.push(setTimeout(cycle, lag)); } else { first = false; cycle(); }
+    };
+    this.stop = function () { if (!playing) return; playing = false; el.classList.remove('on'); clear(); };
+    // 減少動態：停在最有代表性的那一步
+    this.still = function (step) { this.seek(step || names[Math.max(0, names.indexOf('out') - 2)]); el.classList.add('still'); };
+    this.seek = function (step) {   // 截圖檢查用：直接跳到某一步
+      clear(); reset(); playing = false; frozen = true; el.classList.add('on');
+      for (var i = 0; i < steps.length; i++) {
+        if (steps[i][1] === 'out') break;
+        el.classList.add(steps[i][1]); applyStep(steps[i][1]);
+        if (steps[i][1] === step) break;
+      }
+      nums.forEach(function (e) {
+        var at = names.indexOf(e.getAttribute('data-at')), now = names.indexOf(step);
+        e.textContent = fmt(e, at >= 0 && at <= now ? +e.getAttribute('data-to') : from(e));
+      });
+    };
+  }
+
+  // 依面板大小縮放內容（手機略小、桌機略大）
+  function fit() {
+    scenes.forEach(function (el) {
+      var st = el.querySelector('.stage');
+      var max = el.classList.contains('big') ? 1.3 : 1.12;
+      var k = Math.min(max, (el.clientWidth - 16) / st.offsetWidth, (el.clientHeight - 20) / st.offsetHeight);
+      el.style.setProperty('--k', Math.max(.5, k).toFixed(3));
+    });
+  }
+  fit();
+  if ('ResizeObserver' in window) { var ro = new ResizeObserver(fit); scenes.forEach(function (el) { ro.observe(el); }); }
+  else window.addEventListener('resize', fit);
+
+  var runners = scenes.map(function (el) { return new Runner(el, PLAN[el.getAttribute('data-scene')] || [8000]); });
+  window.__scenes = { seek: function (name, step) { var i = scenes.findIndex(function (e) { return e.getAttribute('data-scene') === name; }); if (i >= 0) runners[i].seek(step); } };
+  var STILL = { core: 's9', near: 's3', ring: 's4', close: 's3', menu: 's3', cancel: 's3', update: 's6' };
+  if (reduce || !('IntersectionObserver' in window)) { runners.forEach(function (r, i) { r.still(STILL[scenes[i].getAttribute('data-scene')]); }); return; }
+
+  var seen = new Map();
+  function ready(el) { var b = el.closest('.reveal'); return !b || b.classList.contains('in'); }
+  function sync(el) {
+    var r = runners[scenes.indexOf(el)];
+    if (seen.get(el) && !document.hidden) {
+      if (ready(el)) r.play((scenes.indexOf(el) % 3) * 260); else setTimeout(function () { sync(el); }, 300);
+    } else r.stop();
+  }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { seen.set(e.target, e.isIntersecting); sync(e.target); });
+  }, { threshold: .35 });
+  scenes.forEach(function (el) { io.observe(el); });
+  document.addEventListener('visibilitychange', function () { scenes.forEach(sync); });
+
+  // 手機橫向滑動的位置指示
+  var feats = document.getElementById('feats'), ind = document.querySelector('.feat-ind i');
+  function syncInd() {
+    if (!feats || !ind) return;
+    var sw = feats.scrollWidth, cw = feats.clientWidth;
+    if (sw <= cw + 2) return;
+    var frac = cw / sw;
+    ind.style.width = (frac * 100).toFixed(2) + '%';
+    ind.style.transform = 'translateX(' + (feats.scrollLeft / (sw - cw) * (1 - frac) / frac * 100).toFixed(2) + '%)';
+  }
+  if (feats) { feats.addEventListener('scroll', syncInd, { passive: true }); window.addEventListener('resize', syncInd); syncInd(); }
+})();
+
+</script>
+</body>
+</html>

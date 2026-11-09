@@ -1,0 +1,25 @@
+<?xml version="1.0" standalone="yes"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>傳送都ok</title>
+        <item>
+            <title>1.0</title>
+            <pubDate>Mon, 09 Nov 2026 11:26:52 +0800</pubDate>
+            <link>https://felix5zheng.github.io/send-ok</link>
+            <sparkle:version>1</sparkle:version>
+            <sparkle:shortVersionString>1.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<h2>傳送都ok 1.0</h2>
+<ul>
+  <li>第一個正式版本。把檔案拖到瀏海，靠近時瀏海先探出頭，碰到就展開成投放區，放開就打開 AirDrop。</li>
+  <li>放開後縮圖飛進瀏海；送出、取消、失敗都會在瀏海顯示結果，失敗時點一下就能重試。</li>
+  <li>選單列的紙飛機會變成進度環，傳完補滿一圈換成勾勾；選單打開時也能看到「60% · 約 8 秒」。</li>
+  <li>對方收下後自動關掉 AirDrop 視窗（需要「輔助使用」權限）。</li>
+  <li>選單可以「傳送檔案…」「傳送剪貼簿的檔案」，或把最近傳過的再傳一次。</li>
+  <li>新增自動更新：有新版本時在 App 內提示，點一下就能安裝。</li>
+</ul>
+]]></description>
+            <enclosure url="https://felix5zheng.github.io/send-ok/downloads/SendOK-1.0.dmg" length="2110371" type="application/octet-stream" sparkle:edSignature="DpH/dWGlv8iYLFR5xnfVNvEEsJqn+UWQmR8XcSIj2Z1kWZfKRW21x7FHz0lBUIsnK49ziDJMm4MxqXvG3rPkBA=="/>
+        </item>
+    </channel>
+</rss>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>隱私權政策 — 傳送都ok</title>
+<link rel="icon" type="image/png" sizes="64x64" href="../icons/favicon-64.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<meta name="description" content="傳送都ok 的隱私權政策：檔案只透過 AirDrop 傳送，不收集任何資料。">
+<style>
+
+:root {
+  --paper: #F4F4F1;
+  --ink: #1D1D1B;
+  --ink-2: #5A5A52;
+  --mute: #9C9C95;
+  --line: rgba(29,29,27,.10);
+  --line-strong: rgba(29,29,27,.24);
+  --ai: #44617B;
+  --font: -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --ease-spring: cubic-bezier(.34, 1.4, .64, 1);
+  --col: 620px;
+  --top-h: 52px;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--font); font-weight: 400; font-size: 16.5px; line-height: 1.95; letter-spacing: .02em;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; font-variant-numeric: tabular-nums;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+h1, h2, h3, b, strong { font-weight: 600; }
+a { color: inherit; }
+::selection { background: rgba(68,97,123,.18); }
+:focus-visible { outline: 1px solid var(--ink); outline-offset: 4px; border-radius: 2px; }
+
+.top {
+  position: sticky; top: 0; z-index: 20; height: var(--top-h);
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 clamp(18px, 3vw, 40px);
+  padding-top: env(safe-area-inset-top, 0px);
+  background: rgba(244,244,241,.74);
+  -webkit-backdrop-filter: saturate(160%) blur(18px); backdrop-filter: saturate(160%) blur(18px);
+  border-bottom: 1px solid var(--line);
+  font-size: 14px; letter-spacing: .05em;
+}
+.top nav { display: flex; gap: 22px; }
+.brand { display: inline-flex; align-items: center; gap: 9px; text-decoration: none; color: inherit; }
+.brand img { width: 20px; height: 20px; display: block; }
+.top nav a { text-decoration: none; color: var(--ink-2); transition: color .3s; }
+.top nav a:hover { color: var(--ink); }
+
+.wrap { max-width: calc(var(--col) + 96px); margin: 0 auto; padding: 0 clamp(22px, 4vw, 48px); }
+
+.hero { padding: clamp(84px, 16vh, 176px) 0 clamp(56px, 9vh, 96px); }
+.hero .for { font-size: 14px; color: var(--ink-2); letter-spacing: .14em; margin: 0 0 28px; }
+.hero h1 { font-size: clamp(64px, 12vw, 128px); line-height: 1.02; letter-spacing: -.015em; margin: 0 0 30px; }
+.hero .sub { font-size: clamp(18px, 2.2vw, 22px); color: var(--ink-2); letter-spacing: .06em; line-height: 1.8; margin: 0 0 48px; }
+.ch { display: inline-block; }
+
+.dl { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; padding-top: 22px; border-top: 1px solid var(--line); }
+.btn {
+  font-family: var(--font); font-weight: 400; font-size: 16px; letter-spacing: .14em;
+  color: var(--ink); background: transparent; text-decoration: none; display: inline-block;
+  border: 1px solid var(--ink); border-radius: 999px; padding: 10px 30px; cursor: pointer;
+  transition: transform .4s var(--ease-spring), background .3s, color .3s, border-color .3s;
+}
+.btn:hover { background: var(--ink); color: var(--paper); }
+.btn:active { transform: scale(.96); }
+.btn[aria-disabled="true"] { border-color: var(--line-strong); color: var(--mute); pointer-events: none; }
+.dl .meta { font-size: 13.5px; color: var(--mute); letter-spacing: .05em; }
+
+section { padding: 72px 0 80px; border-top: 1px solid var(--line); }
+.no { font-size: 13px; color: var(--mute); letter-spacing: .14em; margin: 0 0 14px; }
+h2 { font-size: clamp(28px, 4vw, 38px); line-height: 1.3; letter-spacing: -.005em; margin: 0 0 16px; }
+.lede { font-size: 18px; color: var(--ink-2); line-height: 1.9; margin: 0 0 36px; }
+p { margin: 0 0 14px; }
+.muted { color: var(--ink-2); }
+
+/* 領取表單:髮絲線底線輸入框 */
+.claim { display: flex; gap: 18px; align-items: flex-end; flex-wrap: wrap; }
+.field { flex: 1 1 260px; min-width: 0; }
+.field label { display: block; font-size: 13px; color: var(--mute); letter-spacing: .12em; margin-bottom: 4px; }
+.field input {
+  width: 100%; border: 0; border-bottom: 1px solid var(--line-strong); background: transparent;
+  font-family: var(--font); font-weight: 400; font-size: 19px; letter-spacing: .03em; color: var(--ink);
+  padding: 8px 0 10px; border-radius: 0; outline: none; transition: border-color .3s;
+}
+.field input:focus { border-bottom-color: var(--ink); }
+.field input::placeholder { color: var(--mute); }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.msg { min-height: 26px; margin-top: 14px; font-size: 14.5px; color: var(--ink-2); letter-spacing: .03em; }
+.msg.err { color: #8A3B2E; }
+
+.result { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .7s var(--ease-out); }
+.result.on { grid-template-rows: 1fr; }
+.result > div { overflow: hidden; }
+.result .inner { padding-top: 26px; opacity: 0; filter: blur(6px); transform: translateY(6px);
+  transition: opacity .7s .1s var(--ease-out), filter .7s .1s var(--ease-out), transform .7s .1s var(--ease-out); }
+.result.on .inner { opacity: 1; filter: blur(0); transform: none; }
+.keyrow { display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  border-top: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong); padding: 16px 0; }
+.keyrow code { flex: 1 1 auto; font-family: ui-monospace, Menlo, monospace; font-size: clamp(16px, 2.4vw, 21px); letter-spacing: .06em; color: var(--ink); word-break: break-all; }
+.ghost {
+  font-family: var(--font); font-weight: 400; font-size: 14px; letter-spacing: .1em; color: var(--ink);
+  background: transparent; border: 1px solid var(--line-strong); border-radius: 999px; padding: 6px 18px; min-width: 92px; cursor: pointer;
+  transition: transform .35s var(--ease-spring), border-color .3s;
+}
+.ghost:hover { border-color: var(--ink); }
+.ghost:active { transform: scale(.96); }
+.swap-t { display: inline-block; transition: opacity .28s, filter .28s, transform .28s; }
+.swap-t.out { opacity: 0; filter: blur(6px); transform: translateY(5px); }
+.next { list-style: none; margin: 22px 0 0; padding: 0; counter-reset: s; }
+.next li { counter-increment: s; display: grid; grid-template-columns: 34px minmax(0, 1fr); padding: 10px 0; border-bottom: 1px solid var(--line); color: var(--ink-2); font-size: 15.5px; }
+.next li::before { content: counter(s); color: var(--ink); font-size: 18px; line-height: 1.6; }
+.note { border-left: 1px solid var(--ai); padding: 2px 0 2px 20px; margin: 28px 0 0; color: var(--ink-2); font-size: 15px; }
+
+.rows { border-top: 1px solid var(--line); }
+.rows .r { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 20px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.rows .h { font-size: 17px; letter-spacing: .03em; }
+.rows .d { color: var(--ink-2); font-size: 15.5px; }
+
+footer { border-top: 1px solid var(--line); padding: 26px 0 56px; font-size: 13px; color: var(--mute); letter-spacing: .05em; display: flex; gap: 22px; flex-wrap: wrap; }
+footer a { text-decoration: none; }
+footer a:hover { color: var(--ink); }
+
+.js .hero .ch { opacity: 0; filter: blur(10px); transform: translateY(.14em); }
+.js .hero .ch.in { opacity: 1; filter: blur(0); transform: none; transition: opacity .8s var(--ease-out), filter .8s var(--ease-out), transform .8s var(--ease-out); }
+.js .reveal { opacity: 0; filter: blur(6px); transform: translateY(8px); }
+.js .reveal.in { opacity: 1; filter: blur(0); transform: none; transition: opacity .9s var(--ease-out), filter .9s var(--ease-out), transform .9s var(--ease-out); }
+
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  .rows .r { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .top nav { gap: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; }
+  .js .hero .ch, .js .reveal, .result .inner { opacity: 1 !important; filter: none !important; transform: none !important; }
+}
+
+
+/* ---------- 區塊版(與後台同一套) ---------- */
+:root { --block: #FBFBF9; --line: rgba(29,29,27,.15); --line-strong: rgba(29,29,27,.32); --mute: #8E8E86; }
+body { font-size: 15px; line-height: 1.75; }
+.top { height: 50px; border-bottom: 1px solid var(--line-strong); padding: 0 20px; background: rgba(244,244,241,.82); }
+.wrap { max-width: 900px; padding: 16px 20px 0; display: flex; flex-direction: column; gap: 14px; }
+.block { background: var(--block); border: 1px solid var(--line-strong); border-radius: 12px; overflow: hidden; }
+.block-h { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 18px;
+  border-bottom: 1px solid var(--line-strong); background: rgba(29,29,27,.025); }
+.block-h h2 { margin: 0; font-size: 15px; line-height: 1.5; letter-spacing: .06em; }
+.block-h .meta { font-size: 12px; color: var(--mute); letter-spacing: .06em; }
+.block-b { padding: 18px 22px 22px; }
+.doc { padding: 0; }
+.doc h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.2; letter-spacing: -.01em; margin: 0 0 12px; }
+.doc .lede { font-size: 15px; line-height: 1.8; margin: 0 0 6px; }
+.doc h3 { font-size: 14px; letter-spacing: .06em; color: var(--ink-2); margin: 20px 0 6px; padding-bottom: 5px; border-bottom: 1px solid var(--line-strong); }
+.doc ul { margin: 0 0 8px; padding-left: 1.2em; color: var(--ink-2); font-size: 14px; }
+.doc li { margin-bottom: 4px; }
+.doc p.muted { font-size: 14px; margin: 0 0 6px; }
+.btn { background: var(--ink); color: var(--paper); border: 0; font-size: 15px; padding: 9px 26px; margin-top: 10px; }
+.btn:hover { background: #2C2C29; }
+footer { border-top: 0; padding: 6px 2px 40px; font-size: 12.5px; }
+@media (max-width: 520px) { .wrap { padding: 12px 12px 0; } .block-b { padding: 16px 16px 18px; } }
+/* 字體跟 App 一樣用系統字:中文蘋方、日文冬青黑體、西文 San Francisco */
+html[lang="zh-Hans"] { --font: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif; }
+html[lang="ja"] { --font: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif; }
+html[lang="en"], html[lang="es"], html[lang="pt"] { --font: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif; }
+html:is([lang="en"], [lang="es"], [lang="pt"]) body, html:is([lang="en"], [lang="es"], [lang="pt"]) body * { letter-spacing: normal !important; }
+/* 語言切換 */
+.lang { position: relative; display: inline-block; vertical-align: middle; }
+.lang-btn { display: inline-flex; align-items: center; gap: 6px; font: inherit; font-size: 13px; letter-spacing: 0; color: var(--ink-2); background: transparent;
+  border: 1px solid var(--line-strong); border-radius: 999px; padding: 3px 11px 3px 8px; cursor: pointer; transition: color .3s, border-color .3s; }
+.lang-btn:hover, .lang-btn[aria-expanded="true"] { color: var(--ink); border-color: rgba(29,29,27,.55); }
+.lang-ico { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.1; flex: none; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.lang-menu { position: absolute; right: 0; top: calc(100% + 8px); min-width: 168px; margin: 0; padding: 5px; list-style: none; background: #FBFBF9;
+  border: 1px solid var(--line-strong); border-radius: 10px; box-shadow: 0 14px 34px rgba(29,29,27,.14); z-index: 30; text-align: left; }
+.lang-menu button { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 14px; font-size: 14px; line-height: 1.4; letter-spacing: 0;
+  color: var(--ink); background: transparent; border: 0; border-radius: 6px; padding: 7px 10px; cursor: pointer; text-align: left; font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; }
+.lang-menu button[lang="zh-Hant"] { font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", sans-serif; }
+.lang-menu button[lang="zh-Hans"] { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+.lang-menu button[lang="ja"] { font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif; }
+.lang-menu button:hover, .lang-menu button:focus-visible { background: rgba(29,29,27,.06); outline: none; }
+.lang-menu button[aria-checked="true"]::after { content: ""; width: 9px; height: 5px; margin-top: -3px; border-left: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); }
+/* 區塊標題:日期不拆行,放不下就換到下一行 */
+.block-h { flex-wrap: wrap; row-gap: 2px; }
+.block-h .meta { white-space: nowrap; }
+/* 頂欄放得下切換鈕 */
+.top nav { align-items: center; }
+.top-r { display: flex; align-items: center; gap: 14px; }
+.top .brand, .top nav a, .top-l .ttl, .top-r .home, .lang-btn { white-space: nowrap; }
+@media (max-width: 520px) { .top-l .sep, .top-l .ttl, .top-r .home, .top nav > a { display: none; } }
+@media (max-width: 520px) { .lang-cur { font-size: 0; } .lang-cur::after { content: attr(data-short); font-size: 13px; } .lang-btn { padding: 3px 9px 3px 7px; } }
+
+.doc h3 .k { font-weight: 400; color: var(--mute); margin-left: 6px; font-size: 12px; }
+.doc ol { margin: 0 0 8px; padding-left: 1.3em; color: var(--ink-2); font-size: 14px; }
+.doc ol li { margin-bottom: 4px; }
+.doc kbd { font-family: var(--font); font-size: 12px; border: 1px solid var(--line-strong); border-radius: 5px; padding: 0 5px; background: #fff; color: var(--ink); }
+.doc .toc { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 10px 0 4px; font-size: 13px; }
+.doc .toc a { color: var(--ink-2); text-decoration: none; border-bottom: 1px solid var(--line-strong); }
+.doc .toc a:hover { color: var(--ink); }
+.doc .tip { font-size: 13.5px; color: var(--ink-2); background: rgba(45,75,103,.06); border: 1px solid rgba(45,75,103,.18); border-radius: 8px; padding: 8px 12px; margin: 6px 0 10px; }
+.doc table { border-collapse: collapse; width: 100%; font-size: 13.5px; margin: 4px 0 10px; }
+.doc td, .doc th { border-bottom: 1px solid var(--line); padding: 6px 8px 6px 0; text-align: left; vertical-align: top; color: var(--ink-2); }
+.doc th { color: var(--ink); font-weight: 600; white-space: nowrap; }
+
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../"><img src="../icons/favicon-64.png" alt="" width="20" height="20"><span>傳送都ok</span></a>
+  <nav><a href="../manual/">使用說明</a><a href="../privacy/">隱私權政策</a></nav>
+</header>
+<main class="wrap">
+  <article class="doc block">
+    <div class="block-h"><h2>隱私權政策</h2><span class="meta">最後更新：2026 年 11 月 9 日</span></div>
+    <div class="block-b">
+    <h1>你的檔案只交給 AirDrop</h1>
+    <p class="lede">傳送都ok 只是幫你更快叫出 Apple 的 AirDrop。檔案由 AirDrop 直接傳給對方，不經過我們或任何伺服器；不需要帳號，也不會上傳任何資料。唯一的對外連線是檢查更新。</p>
+
+    <h3>檢查更新時</h3>
+    <ul>
+      <li>App 會連到本網站讀取最新版本資訊（appcast.xml），只附帶 App 名稱與版本號，不附帶任何個人資料。</li>
+      <li>每次打開 App 檢查一次，之後每小時一次。</li>
+    </ul>
+
+    <h3>在你的 Mac 上使用、但不會離開的資料</h3>
+    <ul>
+      <li>你拖到瀏海或從選單選的檔案：只讀取名稱、大小、類型與縮圖，用來顯示在瀏海上，再交給 AirDrop。</li>
+      <li>「最近傳送」紀錄（最多 3 筆的檔案路徑、時間、有沒有送出），存在這台 Mac 的偏好設定裡，可以在選單按「清除紀錄」刪掉。</li>
+      <li>從「照片」等 App 拖來的項目，會先匯出到暫存資料夾再傳送，傳完自動清除。</li>
+      <li>你的設定（登入時自動開啟等）。</li>
+    </ul>
+
+    <h3>輔助使用權限（建議開啟）</h3>
+    <ul>
+      <li>只用來讀取系統 AirDrop 視窗的狀態：看到「已傳送」時自動按「完成」關掉視窗，並在瀏海顯示「已送出／沒有傳送」。</li>
+      <li>不會讀取或操作其他 App 的內容。沒有開也能傳送，只是要自己關掉 AirDrop 視窗。</li>
+      <li>隨時可以在 系統設定 › 隱私權與安全性 › 輔助使用 關閉。</li>
+    </ul>
+
+    <h3>我們不收集的</h3>
+    <ul>
+      <li>任何檔案內容、檔名、傳送對象或傳送紀錄。</li>
+      <li>使用行為分析、廣告追蹤、當機回報。</li>
+    </ul>
+
+    <h3>網站</h3>
+    <p class="muted">本網站由 GitHub Pages 提供，GitHub 可能為了安全目的記錄瀏覽者的網路位址。網站不使用 Cookie。</p>
+
+    <h3>聯絡我們</h3>
+    <p class="muted">有任何問題，請來信 <a href="mailto:imokahhhh@gmail.com">imokahhhh@gmail.com</a>。</p>
+    </div>
+  </article>
+  <footer>
+    <a href="../">下載</a>
+    <a href="../manual/">使用說明</a>
+    <a href="../privacy/">隱私權政策</a>
+    <span>© 2026 傳送都ok</span>
+  </footer>
+</main>
+</body>
+</html>
