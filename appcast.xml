@@ -3,6 +3,21 @@
     <channel>
         <title>傳送都ok</title>
         <item>
+            <title>1.1</title>
+            <pubDate>Mon, 09 Nov 2026 21:51:24 +0800</pubDate>
+            <link>https://felix5zheng.github.io/send-ok</link>
+            <sparkle:version>2</sparkle:version>
+            <sparkle:shortVersionString>1.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+            <description><![CDATA[<h2>傳送都ok 1.1</h2>
+<ul>
+  <li>自動更新改成全自動：有新版本時在背景自己下載，沒在傳送時自己安裝並重新開啟，不用再按任何按鈕。</li>
+  <li>選單拿掉「預覽展開動畫」。</li>
+</ul>
+]]></description>
+            <enclosure url="https://felix5zheng.github.io/send-ok/downloads/SendOK-1.1.dmg" length="2111057" type="application/octet-stream" sparkle:edSignature="Uq/pgUUsWbda9WVtR8CN9W0j3r7I4sSCJwigMbvfefIy8ba1j4v30wjSkqexuaFG8HZqAfHXtff1qJG9N/J2Bg=="/>
+        </item>
+        <item>
             <title>1.0</title>
             <pubDate>Mon, 09 Nov 2026 11:26:52 +0800</pubDate>
             <link>https://felix5zheng.github.io/send-ok</link>
