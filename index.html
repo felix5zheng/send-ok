@@ -583,6 +583,8 @@ footer a:hover { color: var(--ink); }
 .sc-update .fp { width: 28%; transition: width 4.6s cubic-bezier(.3,.1,.6,1), opacity .3s ease; }
 .scene .cursor { z-index: 6; }
 
+.adw .av .dv { width: 13px; height: 13px; color: #fff; }
+
 </style>
 </head>
 <body>
@@ -595,6 +597,9 @@ footer a:hover { color: var(--ink); }
   <symbol id="i-file" viewBox="0 0 22 26"><path d="M3 1h11l6 6v16.5A1.5 1.5 0 0 1 18.5 25h-15A1.5 1.5 0 0 1 2 23.5v-21A1.5 1.5 0 0 1 3 1Z" style="fill:#F5F5F7"/><path d="M14 1v4.5A1.5 1.5 0 0 0 15.5 7H20" style="fill:#D6D6DA"/><rect x="4.5" y="15" width="13" height="5.5" rx="1.2" style="fill:#5E5CE6"/><path d="M8.6 9.6l4.8 2.8-4.8 2.8Z" transform="translate(0 -1.4) scale(1)" style="fill:#8E8E93"/></symbol>
   <symbol id="i-file2" viewBox="0 0 22 26"><path d="M3 1h11l6 6v16.5A1.5 1.5 0 0 1 18.5 25h-15A1.5 1.5 0 0 1 2 23.5v-21A1.5 1.5 0 0 1 3 1Z" style="fill:#F5F5F7"/><path d="M14 1v4.5A1.5 1.5 0 0 0 15.5 7H20" style="fill:#D6D6DA"/><rect x="4.5" y="9" width="13" height="10" rx="1.5" style="fill:#7FB3D5"/><path d="M4.5 19l4.2-4.4 3 3 2.1-2 3.7 3.4Z" style="fill:#3E7CA8"/></symbol>
   <symbol id="i-gauge" viewBox="12 17 76 68"><path d="M16 48 84 20 48 58Z" style="fill:currentColor"/><path d="M48 58 84 20 62 82Z" style="fill:currentColor;opacity:.55"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 16 16"><rect x="4.6" y="1.6" width="6.8" height="12.8" rx="1.6" style="fill:none;stroke:currentColor;stroke-width:1.3"/><rect x="6.9" y="2.9" width="2.2" height=".8" rx=".4" style="fill:currentColor"/></symbol>
+  <symbol id="i-tablet" viewBox="0 0 16 16"><rect x="2.6" y="1.8" width="10.8" height="12.4" rx="1.5" style="fill:none;stroke:currentColor;stroke-width:1.3"/><circle cx="8" cy="12.3" r=".7" style="fill:currentColor"/></symbol>
+  <symbol id="i-laptop" viewBox="0 0 16 16"><rect x="3.2" y="3.2" width="9.6" height="7" rx="1" style="fill:none;stroke:currentColor;stroke-width:1.3"/><path d="M1.6 12.4h12.8" style="stroke:currentColor;stroke-width:1.4;stroke-linecap:round"/></symbol>
 </svg>
 
 <header class="top">
@@ -642,9 +647,9 @@ footer a:hover { color: var(--ink); }
         </div>
         <div class="mwin adw"><div class="ah">AirDrop</div><div class="as">選擇要傳給誰</div>
           <div class="ppl">
-            <div class="p p1"><div class="av a1">涵</div>涵涵<div class="st"><span class="s0"></span></div></div>
-            <div class="p p2"><div class="av a2">F</div>Felix<div class="st"><span class="s0"></span><span class="s1">等待中…</span><span class="s2">已傳送</span></div></div>
-            <div class="p p3"><div class="av a3">i</div>iPad<div class="st"><span class="s0"></span></div></div>
+            <div class="p p1"><div class="av a1"><svg class="dv"><use href="#i-tablet"/></svg></div>iPad<div class="st"><span class="s0"></span></div></div>
+            <div class="p p2"><div class="av a2"><svg class="dv"><use href="#i-phone"/></svg></div>iPhone<div class="st"><span class="s0"></span><span class="s1">等待中…</span><span class="s2">已傳送</span></div></div>
+            <div class="p p3"><div class="av a3"><svg class="dv"><use href="#i-laptop"/></svg></div>MacBook<div class="st"><span class="s0"></span></div></div>
           </div>
           <span class="btn btnc">取消</span><span class="btn btnd">完成</span></div>
         <div class="sprite2"><svg class="fthumb"><use href="#i-file"/></svg></div>
@@ -695,8 +700,8 @@ footer a:hover { color: var(--ink); }
           </div>
           <div class="mwin adw"><div class="ah">AirDrop</div><div class="as">選擇要傳給誰</div>
             <div class="ppl">
-              <div class="p p1"><div class="av a1">涵</div>涵涵<div class="st"><span class="s0"></span></div></div>
-              <div class="p p2"><div class="av a2">F</div>Felix<div class="st"><span class="s0"></span><span class="s1">等待中…</span><span class="s2">已傳送</span></div></div>
+              <div class="p p1"><div class="av a1"><svg class="dv"><use href="#i-tablet"/></svg></div>iPad<div class="st"><span class="s0"></span></div></div>
+              <div class="p p2"><div class="av a2"><svg class="dv"><use href="#i-phone"/></svg></div>iPhone<div class="st"><span class="s0"></span><span class="s1">等待中…</span><span class="s2">已傳送</span></div></div>
             </div>
             <span class="btn btnc">取消</span><span class="btn btnd">完成</span></div>
         </div></div>
@@ -730,8 +735,8 @@ footer a:hover { color: var(--ink); }
           </div>
           <div class="mwin adw"><div class="ah">AirDrop</div><div class="as">選擇要傳給誰</div>
             <div class="ppl">
-              <div class="p p1"><div class="av a1">涵</div>涵涵<div class="st"><span class="s0"></span></div></div>
-              <div class="p p2"><div class="av a2">F</div>Felix<div class="st"><span class="s0"></span></div></div>
+              <div class="p p1"><div class="av a1"><svg class="dv"><use href="#i-tablet"/></svg></div>iPad<div class="st"><span class="s0"></span></div></div>
+              <div class="p p2"><div class="av a2"><svg class="dv"><use href="#i-phone"/></svg></div>iPhone<div class="st"><span class="s0"></span></div></div>
             </div>
             <span class="btn btnc">取消</span></div>
           <div class="cursor"><svg class="ico"><use href="#i-cursor"/></svg></div>
