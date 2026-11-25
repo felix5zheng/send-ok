@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-sceIOt0gpxLDvytZNnuUxyoiETSsYgsc3dvZy9iKEdg='; style-src 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; manifest-src 'self'; media-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-sceIOt0gpxLDvytZNnuUxyoiETSsYgsc3dvZy9iKEdg=' 'sha256-qBE6AGVJrpKhMMcvA0OqITKWP0FQiPO5/Z1B8h4Bku8=' 'sha256-D3caKY73TRkcxqV2fgw47Yta+Zq5LjPKTcOZ6GLD+VQ='; style-src 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; manifest-src 'self'; media-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>if (window.top !== window.self) document.documentElement.style.display = 'none';</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -138,32 +138,152 @@ section { padding-block: var(--space-xl); }
   .doc dd:first-of-type { padding-top: 0; }
 }
 
+/* ok-i18n 版面：語言按鈕放在導覽列最右；窄螢幕導覽列放不下時，imokahhhh 連結先收起（頁尾還有） */
+.nav { align-items: center; }
+:lang(ja) :is(h1, h2, h3) { word-break: auto-phrase; }
+@media (max-width: 40rem) { .nav > a[href="/"] { display: none; } }
+@media (max-width: 23.75rem) { .nav { gap: var(--space-sm); } .lang-btn { padding: 0 8px; } #langCur { display: none; } }
+/* ok-i18n:start */
+/* ok-i18n：語言選單與各語言字體。顏色、圓角、陰影全部走頁面自己的 token。 */
+:root:lang(zh-Hans) { --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Helvetica Neue", "Noto Sans SC", "Microsoft YaHei", sans-serif; --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Helvetica Neue", "Noto Sans SC", "Microsoft YaHei", sans-serif; }
+:root:lang(ja) { --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif; --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif; }
+:root:lang(ko) { --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; }
+:root:lang(hi) { --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Kohinoor Devanagari", "Noto Sans Devanagari", "Nirmala UI", sans-serif; --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Kohinoor Devanagari", "Noto Sans Devanagari", "Nirmala UI", sans-serif; }
+:root:lang(hi) body, :root:lang(ko) body, :root:lang(ja) body { letter-spacing: 0; }
+:root:lang(en), :root:lang(es), :root:lang(pt), :root:lang(ms), :root:lang(hi) { word-break: normal; overflow-wrap: break-word; }
+
+.lang { position: relative; flex: none; }
+.lang-btn { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 11px 0 9px; font: inherit; font-size: var(--text-xs, 12px); color: var(--color-ink-2); background: transparent; border: 1px solid var(--color-hairline); border-radius: var(--radius-pill, 9999px); cursor: pointer; white-space: nowrap; transition: color var(--dur, 240ms) var(--ease), border-color var(--dur, 240ms) var(--ease), background-color var(--dur, 240ms) var(--ease); }
+.lang-btn svg { width: 14px; height: 14px; flex: none; }
+.lang-btn:hover, .lang-btn[aria-expanded="true"] { color: var(--color-ink); border-color: var(--color-ink); }
+.lang-btn:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; transition: none; }
+.lang-btn:active { background: var(--color-band); }
+.lang-menu { position: absolute; right: 0; top: calc(100% + 8px); z-index: 30; min-width: 176px; max-height: min(70dvh, 420px); overflow-y: auto; margin: 0; padding: 6px; list-style: none; background: var(--color-card); border-radius: var(--radius-md, 14px); box-shadow: var(--shadow-lift); }
+.lang-menu[hidden] { display: none; }
+.lang-menu button { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 9px 12px; font: inherit; font-size: var(--text-sm, 14px); line-height: 1.35; letter-spacing: 0; color: var(--color-ink); background: transparent; border: 0; border-radius: 9px; cursor: pointer; text-align: left; }
+.lang-menu button[lang="zh-Hant"] { font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", sans-serif; }
+.lang-menu button[lang="zh-Hans"] { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+.lang-menu button[lang="ja"] { font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif; }
+.lang-menu button[lang="ko"] { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; }
+.lang-menu button[lang="hi"] { font-family: -apple-system, BlinkMacSystemFont, "Kohinoor Devanagari", "Noto Sans Devanagari", sans-serif; }
+.lang-menu button:hover { background: var(--color-band); }
+.lang-menu button:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
+.lang-menu button[aria-checked="true"]::after { content: ""; width: 9px; height: 5px; margin-top: -3px; border-left: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); }
+@media (prefers-reduced-motion: reduce) { .lang-btn { transition: none; } }
+/* ok-i18n:end */
 </style>
 </head>
 <body>
 <header class="bar">
   <div class="container bar-in">
-    <a class="brand" href="/send-ok/">傳送都ok<small>我都ok啊</small></a>
-    <nav class="nav" aria-label="網站">
-      <a href="/send-ok/manual/">使用說明</a><a href="/send-ok/privacy/">隱私權政策</a><a href="/">imokahhhh</a>
+    <a class="brand" href="/send-ok/"><span data-i="name">傳送都ok</span><small data-i="ch">我都ok啊</small></a>
+    <nav class="nav" aria-label="網站" data-ia="aria-label:nav_aria">
+      <a href="/send-ok/manual/" data-i="nav_manual">使用說明</a><a href="/send-ok/privacy/" data-i="nav_privacy">隱私權政策</a><a href="/">imokahhhh</a><div class="lang" id="lang">
+  <button type="button" class="lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false" aria-controls="langMenu" aria-label="Language"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="8" cy="8" r="6.3"/><path d="M1.7 8h12.6M8 1.7c1.8 1.7 2.7 3.8 2.7 6.3S9.8 12.6 8 14.3M8 1.7C6.2 3.4 5.3 5.5 5.3 8s.9 4.6 2.7 6.3"/></svg><span id="langCur">繁中</span></button>
+  <ul class="lang-menu" id="langMenu" role="menu" aria-label="Language" hidden></ul>
+</div>
     </nav>
   </div>
 </header>
 <main class="container">
   <article class="doc">
-    <h1>找不到這一頁</h1>
-    <p class="lede">網址可能打錯了，或這一頁已經搬走。</p>
-    <div class="act"><a class="btn" href="/send-ok/">回到傳送都ok</a></div>
+    <h1 data-i="h1">找不到這一頁</h1>
+    <p class="lede" data-i="lede">網址可能打錯了，或這一頁已經搬走。</p>
+    <div class="act"><a class="btn" href="/send-ok/" data-i="back">回到傳送都ok</a></div>
   </article>
 </main>
 <footer class="foot">
   <div class="container">
-    <a href="/send-ok/">下載傳送都ok</a>
-    <a href="/send-ok/manual/">使用說明</a>
-    <a href="/send-ok/privacy/">隱私權政策</a>
+    <a href="/send-ok/" data-i="foot_dl">下載傳送都ok</a>
+    <a href="/send-ok/manual/" data-i="nav_manual">使用說明</a>
+    <a href="/send-ok/privacy/" data-i="nav_privacy">隱私權政策</a>
     <a href="mailto:imokahhhh@gmail.com">imokahhhh@gmail.com</a>
-    <a href="/">我都ok啊</a>
+    <a href="/" data-i="ch">我都ok啊</a>
   </div>
 </footer>
+<script>window.OK_I18N = {"name":["傳送都ok","传送都ok","Send OK","Send OK","Send OK","Send OK","Send OK","Send OK","Send OK"],"ch":["我都ok啊","我都ok啊","imokahhhh","imokahhhh","imokahhhh","imokahhhh","imokahhhh","imokahhhh","imokahhhh"],"nav_aria":["網站","网站","Site","サイト","사이트","Sitio","Site","साइट","Laman"],"nav_manual":["使用說明","使用说明","User guide","使い方","사용 안내","Guía de uso","Guia de uso","उपयोग गाइड","Panduan"],"nav_privacy":["隱私權政策","隐私政策","Privacy policy","プライバシー","개인정보 처리방침","Privacidad","Privacidade","गोपनीयता नीति","Privasi"],"foot_dl":["下載傳送都ok","下载传送都ok","Download Send OK","Send OK をダウンロード","Send OK 다운로드","Descargar Send OK","Baixar Send OK","Send OK डाउनलोड करें","Muat turun Send OK"],"_title":["找不到這一頁：傳送都ok","找不到这一页：传送都ok","Page not found: Send OK","ページが見つかりません：Send OK","페이지를 찾을 수 없음: Send OK","Página no encontrada: Send OK","Página não encontrada: Send OK","पेज नहीं मिला: Send OK","Halaman tidak dijumpai: Send OK"],"h1":["找不到這一頁","找不到这一页","Page not found","ページが見つかりません","페이지를 찾을 수 없습니다","No encontramos esta página","Página não encontrada","यह पेज नहीं मिला","Halaman tidak dijumpai"],"lede":["網址可能打錯了，或這一頁已經搬走。","网址可能输错了，或这一页已经搬走。","The address may be mistyped, or this page has moved.","アドレスが間違っているか、このページは移動しました。","주소를 잘못 입력했거나 페이지가 옮겨졌을 수 있습니다.","Puede que la dirección esté mal escrita o que la página se haya movido.","O endereço pode estar errado, ou esta página mudou de lugar.","हो सकता है पता गलत लिखा गया हो, या यह पेज कहीं और चला गया हो।","Alamat mungkin salah ditaip, atau halaman ini sudah berpindah."],"back":["回到傳送都ok","回到传送都ok","Back to Send OK","Send OK に戻る","Send OK로 돌아가기","Volver a Send OK","Voltar ao Send OK","Send OK पर वापस जाएँ","Kembali ke Send OK"]};</script>
+<script>// ok-i18n: imokahhhh.com 共用多國語言。順序 = 網址 ?lang= → 使用者上次選的（全站共用 ok-lang）→ 瀏覽器語言 → English
+// 用法：頁面先放一段 inline script 設定 window.OK_I18N = { key: [9 個語言] }（順序同 LANGS），再放這支程式。
+// 標記：data-i="key"（換 textContent；key 以 ! 結尾換 innerHTML）、data-ia="aria-label:key;title:key2"（換屬性）。
+// 特殊 key：_title（document.title）、_desc（meta description）。
+(function () {
+  var D = window.OK_I18N || {};
+  var LANGS = ['zh-Hant', 'zh-Hans', 'en', 'ja', 'ko', 'es', 'pt', 'hi', 'ms'];
+  var NAMES = { 'zh-Hant': '繁體中文', 'zh-Hans': '简体中文', en: 'English', ja: '日本語', ko: '한국어', es: 'Español', pt: 'Português', hi: 'हिन्दी', ms: 'Bahasa Melayu' };
+  var SHORT = { 'zh-Hant': '繁中', 'zh-Hans': '简中', en: 'EN', ja: '日本語', ko: '한국어', es: 'ES', pt: 'PT', hi: 'हिं', ms: 'MS' };
+  var cur = 'zh-Hant';
+  function norm(t) {
+    t = String(t || '').toLowerCase();
+    if (t.indexOf('zh') === 0) return /hant|-tw|-hk|-mo/.test(t) ? 'zh-Hant' : 'zh-Hans';
+    var b = t.split('-')[0];
+    if (b === 'id') return 'ms';
+    return LANGS.indexOf(b) >= 0 ? b : null;
+  }
+  function detect() {
+    var q = /[?&]lang=([\w-]+)/.exec(location.search);
+    if (q) { var n = LANGS.indexOf(q[1]) >= 0 ? q[1] : norm(q[1]); if (n) return n; }
+    try {
+      var saved = localStorage.getItem('ok-lang') || localStorage.getItem('bk-lang');
+      if (LANGS.indexOf(saved) >= 0) return saved;
+    } catch (e) {}
+    var list = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language];
+    for (var i = 0; i < list.length; i++) { var l = norm(list[i]); if (l) return l; }
+    return 'en';
+  }
+  function t(key, lang) {
+    var v = D[key]; if (!v) return '';
+    var s = v[LANGS.indexOf(lang || cur)];
+    return s == null || s === '' ? (v[2] || v[0]) : s;   // 缺翻譯時退回英文，再退回繁中
+  }
+  function fmt(s, vars) { return String(s).replace(/\{(\w+)\}/g, function (m, k) { return vars && k in vars ? vars[k] : m; }); }
+  function apply(lang) {
+    cur = lang;
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-i]').forEach(function (el) {
+      var k = el.getAttribute('data-i'), v = t(k);
+      if (!v) return;
+      if (k.slice(-1) === '!') el.innerHTML = v; else el.textContent = v;
+    });
+    document.querySelectorAll('[data-ia]').forEach(function (el) {
+      el.getAttribute('data-ia').split(';').forEach(function (pair) {
+        var p = pair.split(':'); if (p.length === 2 && D[p[1]]) el.setAttribute(p[0].trim(), t(p[1].trim()));
+      });
+    });
+    if (D._title) document.title = t('_title');
+    var md = document.querySelector('meta[name="description"]'); if (md && D._desc) md.setAttribute('content', t('_desc'));
+    var c = document.getElementById('langCur'); if (c) { c.textContent = SHORT[lang]; }
+    var b = document.getElementById('langBtn'); if (b) b.setAttribute('aria-label', 'Language: ' + NAMES[lang]);
+    document.querySelectorAll('#langMenu [role="menuitemradio"]').forEach(function (x) { x.setAttribute('aria-checked', String(x.getAttribute('lang') === lang)); });
+    document.dispatchEvent(new CustomEvent('ok:lang', { detail: lang }));
+  }
+  window.OK = { t: t, fmt: fmt, lang: function () { return cur; }, apply: apply, LANGS: LANGS };
+
+  // 語言選單：地球圖示 + 簡稱，點開是各語言的原文名稱
+  var btn = document.getElementById('langBtn'), menu = document.getElementById('langMenu'), wrap = document.getElementById('lang');
+  if (btn && menu && wrap) {
+    LANGS.forEach(function (l) {
+      var li = document.createElement('li'); li.setAttribute('role', 'none');
+      var x = document.createElement('button');
+      x.type = 'button'; x.setAttribute('role', 'menuitemradio'); x.setAttribute('lang', l); x.textContent = NAMES[l];
+      x.addEventListener('click', function () {
+        try { localStorage.setItem('ok-lang', l); } catch (e) {}
+        close(); apply(l); btn.focus();
+      });
+      li.appendChild(x); menu.appendChild(li);
+    });
+    var open = function () { menu.hidden = false; btn.setAttribute('aria-expanded', 'true'); var c = menu.querySelector('[aria-checked="true"]') || menu.querySelector('button'); c.focus(); };
+    var close = function () { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); };
+    btn.addEventListener('click', function () { if (menu.hidden) open(); else close(); });
+    document.addEventListener('click', function (e) { if (!menu.hidden && !wrap.contains(e.target)) close(); });
+    menu.addEventListener('keydown', function (e) {
+      var items = Array.prototype.slice.call(menu.querySelectorAll('button')), i = items.indexOf(document.activeElement);
+      if (e.key === 'Escape') { close(); btn.focus(); }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); items[(i + 1) % items.length].focus(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
+    });
+  }
+  apply(detect());
+})();
+</script>
 </body>
 </html>

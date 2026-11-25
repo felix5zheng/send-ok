@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-sceIOt0gpxLDvytZNnuUxyoiETSsYgsc3dvZy9iKEdg=' 'sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw=' 'sha256-eBiDkBI1UA7RY/LO4KyvYBnEHIK3s/p/R/ljhq9U+4A='; style-src 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; manifest-src 'self'; media-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-sceIOt0gpxLDvytZNnuUxyoiETSsYgsc3dvZy9iKEdg=' 'sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw=' 'sha256-8zMy9mLXKRH4NQdacBme5mwTdgdRPzwvnzjUzkIuohE=' 'sha256-oUeq6W8ivqmR9lzBTynZOpJvWVpGV3ncUp9dqHrbtQY=' 'sha256-D3caKY73TRkcxqV2fgw47Yta+Zq5LjPKTcOZ6GLD+VQ='; style-src 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; manifest-src 'self'; media-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>if (window.top !== window.self) document.documentElement.style.display = 'none';</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -252,6 +252,39 @@ html:not(.js) .demo .note .n1 { opacity: 1; }
   .ringstage .ring { width: 72px; height: 72px; }
 }
 
+/* ok-i18n 版面：語言按鈕放在導覽列最右；窄螢幕導覽列放不下時，imokahhhh 連結先收起（頁尾還有） */
+.nav { align-items: center; }
+:lang(ja) :is(h1, h2, h3) { word-break: auto-phrase; }
+@media (max-width: 40rem) { .nav > a[href="/"] { display: none; } }
+@media (max-width: 23.75rem) { .nav { gap: var(--space-sm); } .lang-btn { padding: 0 8px; } #langCur { display: none; } }
+/* ok-i18n:start */
+/* ok-i18n：語言選單與各語言字體。顏色、圓角、陰影全部走頁面自己的 token。 */
+:root:lang(zh-Hans) { --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Helvetica Neue", "Noto Sans SC", "Microsoft YaHei", sans-serif; --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Helvetica Neue", "Noto Sans SC", "Microsoft YaHei", sans-serif; }
+:root:lang(ja) { --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif; --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif; }
+:root:lang(ko) { --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; }
+:root:lang(hi) { --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Kohinoor Devanagari", "Noto Sans Devanagari", "Nirmala UI", sans-serif; --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Kohinoor Devanagari", "Noto Sans Devanagari", "Nirmala UI", sans-serif; }
+:root:lang(hi) body, :root:lang(ko) body, :root:lang(ja) body { letter-spacing: 0; }
+:root:lang(en), :root:lang(es), :root:lang(pt), :root:lang(ms), :root:lang(hi) { word-break: normal; overflow-wrap: break-word; }
+
+.lang { position: relative; flex: none; }
+.lang-btn { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 11px 0 9px; font: inherit; font-size: var(--text-xs, 12px); color: var(--color-ink-2); background: transparent; border: 1px solid var(--color-hairline); border-radius: var(--radius-pill, 9999px); cursor: pointer; white-space: nowrap; transition: color var(--dur, 240ms) var(--ease), border-color var(--dur, 240ms) var(--ease), background-color var(--dur, 240ms) var(--ease); }
+.lang-btn svg { width: 14px; height: 14px; flex: none; }
+.lang-btn:hover, .lang-btn[aria-expanded="true"] { color: var(--color-ink); border-color: var(--color-ink); }
+.lang-btn:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; transition: none; }
+.lang-btn:active { background: var(--color-band); }
+.lang-menu { position: absolute; right: 0; top: calc(100% + 8px); z-index: 30; min-width: 176px; max-height: min(70dvh, 420px); overflow-y: auto; margin: 0; padding: 6px; list-style: none; background: var(--color-card); border-radius: var(--radius-md, 14px); box-shadow: var(--shadow-lift); }
+.lang-menu[hidden] { display: none; }
+.lang-menu button { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 9px 12px; font: inherit; font-size: var(--text-sm, 14px); line-height: 1.35; letter-spacing: 0; color: var(--color-ink); background: transparent; border: 0; border-radius: 9px; cursor: pointer; text-align: left; }
+.lang-menu button[lang="zh-Hant"] { font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", sans-serif; }
+.lang-menu button[lang="zh-Hans"] { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+.lang-menu button[lang="ja"] { font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif; }
+.lang-menu button[lang="ko"] { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; }
+.lang-menu button[lang="hi"] { font-family: -apple-system, BlinkMacSystemFont, "Kohinoor Devanagari", "Noto Sans Devanagari", sans-serif; }
+.lang-menu button:hover { background: var(--color-band); }
+.lang-menu button:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
+.lang-menu button[aria-checked="true"]::after { content: ""; width: 9px; height: 5px; margin-top: -3px; border-left: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); }
+@media (prefers-reduced-motion: reduce) { .lang-btn { transition: none; } }
+/* ok-i18n:end */
 </style>
 </head>
 <body>
@@ -265,9 +298,12 @@ html:not(.js) .demo .note .n1 { opacity: 1; }
 
 <header class="bar">
   <div class="container bar-in">
-    <a class="brand" href="./">傳送都ok<small>我都ok啊</small></a>
-    <nav class="nav" aria-label="網站">
-      <a href="manual/">使用說明</a><a href="privacy/">隱私權政策</a><a href="/">imokahhhh</a>
+    <a class="brand" href="./"><span data-i="name">傳送都ok</span><small data-i="ch">我都ok啊</small></a>
+    <nav class="nav" aria-label="網站" data-ia="aria-label:nav_aria">
+      <a href="manual/" data-i="nav_manual">使用說明</a><a href="privacy/" data-i="nav_privacy">隱私權政策</a><a href="/">imokahhhh</a><div class="lang" id="lang">
+  <button type="button" class="lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false" aria-controls="langMenu" aria-label="Language"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="8" cy="8" r="6.3"/><path d="M1.7 8h12.6M8 1.7c1.8 1.7 2.7 3.8 2.7 6.3S9.8 12.6 8 14.3M8 1.7C6.2 3.4 5.3 5.5 5.3 8s.9 4.6 2.7 6.3"/></svg><span id="langCur">繁中</span></button>
+  <ul class="lang-menu" id="langMenu" role="menu" aria-label="Language" hidden></ul>
+</div>
     </nav>
   </div>
 </header>
@@ -275,33 +311,33 @@ html:not(.js) .demo .note .n1 { opacity: 1; }
 <main>
   <div class="container hero">
     <div>
-      <img class="app-icon" src="icons/app-icon-256.png" alt="傳送都ok 圖示" width="64" height="64">
-      <h1>傳送都ok</h1>
-      <p class="lede">把檔案拖到 Mac 瀏海，放開就用 AirDrop 傳送。</p>
+      <img class="app-icon" src="icons/app-icon-256.png" alt="傳送都ok 圖示" data-ia="alt:icon_alt" width="64" height="64">
+      <h1 data-i="name">傳送都ok</h1>
+      <p class="lede" data-i="lede">把檔案拖到 Mac 瀏海，放開就用 AirDrop 傳送。</p>
       <div class="act">
-        <a class="btn" id="dlBtn" href="#get" aria-disabled="true">下載</a>
-        <span class="req" id="dlMeta">免費，macOS 13 以上</span>
+        <a class="btn" id="dlBtn" href="#get" aria-disabled="true" data-i="dl">下載</a>
+        <span class="req" id="dlMeta" data-i="req">免費，macOS 13 以上</span>
       </div>
     </div>
-    <div class="demo" id="demo" role="img" aria-label="示範：檔案拖到瀏海，瀏海展開成投放區，放開後用 AirDrop 送出，選單列的進度環補滿">
+    <div class="demo" id="demo" role="img" data-ia="aria-label:demo_aria" aria-label="示範：檔案拖到瀏海，瀏海展開成投放區，放開後用 AirDrop 送出，選單列的進度環補滿">
       <div class="stage">
         <div class="edge"></div>
         <div class="clock"><svg class="ring" viewBox="0 0 24 24" aria-hidden="true" data-states="s5:begin,s6:run,s7:done,s8:idle"><circle class="tk" cx="12" cy="12" r="10"/><circle class="pg" cx="12" cy="12" r="10" pathLength="100" transform="rotate(-90 12 12)"/><g class="pl"><use href="#i-plane" x="2" y="3" width="20" height="18"/></g><path class="ck" d="M7.6 12.4l3 3 6-6.8"/></svg><span>14:02</span></div>
         <div class="isl" data-st="open" data-states="s2:near,s3:open,s4:drop,s5:idle,s7:sent,s8:idle">
           <div class="c-near"><svg class="th"><use href="#i-doc"/></svg><svg class="pl"><use href="#i-plane"/></svg></div>
-          <div class="c-open"><div class="ttl"><svg><use href="#i-plane"/></svg>AirDrop</div><div class="cnt">1 個項目</div>
-            <div class="zone"><svg class="th"><use href="#i-doc"/></svg><div><b>放開，用 AirDrop 傳送</b><small>beach.mov</small></div><span class="go"><svg><use href="#i-plane"/></svg></span></div></div>
-          <div class="pc c-drop"><svg class="th"><use href="#i-doc"/></svg><span>正在打開 AirDrop…</span></div>
-          <div class="pc c-sent"><span class="bd ok"><svg><use href="#i-check"/></svg></span><span>已用 AirDrop 送出 1 個項目</span></div>
+          <div class="c-open"><div class="ttl"><svg><use href="#i-plane"/></svg>AirDrop</div><div class="cnt" data-i="items1">1 個項目</div>
+            <div class="zone"><svg class="th"><use href="#i-doc"/></svg><div><b data-i="drop_here">放開，用 AirDrop 傳送</b><small>beach.mov</small></div><span class="go"><svg><use href="#i-plane"/></svg></span></div></div>
+          <div class="pc c-drop"><svg class="th"><use href="#i-doc"/></svg><span data-i="opening">正在打開 AirDrop…</span></div>
+          <div class="pc c-sent"><span class="bd ok"><svg><use href="#i-check"/></svg></span><span data-i="sent1">已用 AirDrop 送出 1 個項目</span></div>
         </div>
         <div class="doc"><svg><use href="#i-doc"/></svg></div>
-        <div class="note"><span class="n1">拖到瀏海</span><span class="n2">放開，在 AirDrop 視窗點要傳給誰</span><span class="n3">傳完，選單列的圈補滿</span></div>
+        <div class="note"><span class="n1" data-i="note1">拖到瀏海</span><span class="n2" data-i="note2">放開，在 AirDrop 視窗點要傳給誰</span><span class="n3" data-i="note3">傳完，選單列的圈補滿</span></div>
       </div>
     </div>
   </div>
 
   <section class="container" aria-labelledby="m-h">
-    <div class="sec-head"><h2 id="m-h">瀏海會告訴你</h2><span>拖到一半改變主意，拖走就好</span></div>
+    <div class="sec-head"><h2 id="m-h" data-i="m_h">瀏海會告訴你</h2><span data-i="m_sub">拖到一半改變主意，拖走就好</span></div>
     <div class="moments">
       <article class="moment">
         <div class="demo still" aria-hidden="true"><div class="stage">
@@ -309,27 +345,27 @@ html:not(.js) .demo .note .n1 { opacity: 1; }
           <div class="isl" data-st="near"><div class="c-near"><svg class="th"><use href="#i-doc"/></svg><svg class="pl"><use href="#i-plane"/></svg></div></div>
           <div class="doc" style="opacity:1;transform:translateY(58px)"><svg><use href="#i-doc"/></svg></div>
         </div></div>
-        <h3>靠近，先探出頭</h3>
-        <p>只認拖曳中的檔案，滑鼠路過不會亂跳。</p>
+        <h3 data-i="mo1_h">靠近，先探出頭</h3>
+        <p data-i="mo1_p">只認拖曳中的檔案，滑鼠路過不會亂跳。</p>
       </article>
       <article class="moment">
         <div class="demo still" aria-hidden="true"><div class="stage">
           <div class="edge"></div>
           <div class="isl" data-st="open">
-            <div class="c-open"><div class="ttl"><svg><use href="#i-plane"/></svg>AirDrop</div><div class="cnt">3 個項目</div>
-              <div class="zone"><svg class="th"><use href="#i-doc"/></svg><div><b>放開，用 AirDrop 傳送</b><small>照片 2，影片 1</small></div><span class="go"><svg><use href="#i-plane"/></svg></span></div></div>
+            <div class="c-open"><div class="ttl"><svg><use href="#i-plane"/></svg>AirDrop</div><div class="cnt" data-i="items3">3 個項目</div>
+              <div class="zone"><svg class="th"><use href="#i-doc"/></svg><div><b data-i="drop_here">放開，用 AirDrop 傳送</b><small data-i="zone3">照片 2，影片 1</small></div><span class="go"><svg><use href="#i-plane"/></svg></span></div></div>
           </div>
         </div></div>
-        <h3>碰到，展開成投放區</h3>
-        <p>放開就打開 AirDrop，一次傳很多個也可以。</p>
+        <h3 data-i="mo2_h">碰到，展開成投放區</h3>
+        <p data-i="mo2_p">放開就打開 AirDrop，一次傳很多個也可以。</p>
       </article>
       <article class="moment">
         <div class="demo still" aria-hidden="true"><div class="stage">
           <div class="edge"></div>
-          <div class="isl" data-st="sent"><div class="pc c-sent"><span class="bd ok"><svg><use href="#i-check"/></svg></span><span>已用 AirDrop 送出 3 個項目</span></div></div>
+          <div class="isl" data-st="sent"><div class="pc c-sent"><span class="bd ok"><svg><use href="#i-check"/></svg></span><span data-i="sent3">已用 AirDrop 送出 3 個項目</span></div></div>
         </div></div>
-        <h3>送出，視窗自己關</h3>
-        <p>對方收下後，AirDrop 視窗自動關掉，不用再按完成。</p>
+        <h3 data-i="mo3_h">送出，視窗自己關</h3>
+        <p data-i="mo3_p">對方收下後，AirDrop 視窗自動關掉，不用再按完成。</p>
       </article>
     </div>
   </section>
@@ -337,94 +373,125 @@ html:not(.js) .demo .note .n1 { opacity: 1; }
   <section class="container" aria-labelledby="r-h">
     <div class="ringcard">
       <div>
-        <h2 id="r-h">選單列看進度</h2>
-        <p>放開後，紙飛機縮進圈裡跑進度；傳完補滿一圈，換成勾勾。選單打開時也看得到還要幾秒。</p>
+        <h2 id="r-h" data-i="r_h">選單列看進度</h2>
+        <p data-i="r_p">放開後，紙飛機縮進圈裡跑進度；傳完補滿一圈，換成勾勾。選單打開時也看得到還要幾秒。</p>
       </div>
       <div class="ringstage" id="ringstage" aria-hidden="true">
         <svg class="ring" viewBox="0 0 24 24" aria-hidden="true" data-states="s1:begin,s2:run,s3:done,s4:idle"><circle class="tk" cx="12" cy="12" r="10"/><circle class="pg" cx="12" cy="12" r="10" pathLength="100" transform="rotate(-90 12 12)"/><g class="pl"><use href="#i-plane" x="2" y="3" width="20" height="18"/></g><path class="ck" d="M7.6 12.4l3 3 6-6.8"/></svg>
-        <div class="pct"><span id="pct">0%</span><small id="pctNote">傳送中</small></div>
+        <div class="pct"><span id="pct">0%</span><small id="pctNote" data-i="pct_run">傳送中</small></div>
       </div>
     </div>
   </section>
 
   <section class="container" aria-labelledby="w-h">
-    <div class="sec-head"><h2 id="w-h">不想拖的時候</h2><span>都在選單列的紙飛機裡</span></div>
+    <div class="sec-head"><h2 id="w-h" data-i="w_h">不想拖的時候</h2><span data-i="w_sub">都在選單列的紙飛機裡</span></div>
     <div class="ways">
-      <div class="way"><h3>傳送檔案</h3><kbd>⌘O</kbd><p>選好檔案或資料夾，直接打開 AirDrop。</p></div>
-      <div class="way"><h3>傳送剪貼簿的檔案</h3><kbd>⌃⌥V</kbd><p>在 Finder 拷貝檔案後，一鍵傳出去。</p></div>
-      <div class="way"><h3>最近傳送</h3><kbd>按住 ⌥</kbd><p>最近 3 筆，點一下在 Finder 顯示，按住 Option 就能再傳一次。</p></div>
+      <div class="way"><h3 data-i="w1_h">傳送檔案</h3><kbd>⌘O</kbd><p data-i="w1_p">選好檔案或資料夾，直接打開 AirDrop。</p></div>
+      <div class="way"><h3 data-i="w2_h">傳送剪貼簿的檔案</h3><kbd>⌃⌥V</kbd><p data-i="w2_p">在 Finder 拷貝檔案後，一鍵傳出去。</p></div>
+      <div class="way"><h3 data-i="w3_h">最近傳送</h3><kbd data-i="w3_kbd">按住 ⌥</kbd><p data-i="w3_p">最近 3 筆，點一下在 Finder 顯示，按住 Option 就能再傳一次。</p></div>
     </div>
   </section>
 
-  <section class="container" id="get" aria-label="更新紀錄與權限">
+  <section class="container" id="get" aria-label="更新紀錄與權限" data-ia="aria-label:get_aria">
     <div class="pair">
       <div class="panel">
-        <h2>更新紀錄</h2>
+        <h2 data-i="rel_h">更新紀錄</h2>
         <ol class="rel" id="relList" hidden></ol>
-        <p id="relEmpty">更新紀錄讀取中。App 會自己下載新版本，沒在傳送時自己安裝。</p>
+        <p id="relEmpty" data-i="rel_empty">更新紀錄讀取中。App 會自己下載新版本，沒在傳送時自己安裝。</p>
       </div>
       <div class="panel">
-        <h2>權限</h2>
+        <h2 data-i="perm_h">權限</h2>
         <ol class="perm">
-          <li><b>輔助使用</b>（建議）：讀取 AirDrop 視窗的狀態，傳完自動關掉視窗，並在瀏海顯示結果。沒開也能傳。</li>
-          <li><b>登入時自動開啟</b>（選用）：隨時可以在選單關掉。</li>
+          <li data-i="perm1!"><b>輔助使用</b>（建議）：讀取 AirDrop 視窗的狀態，傳完自動關掉視窗，並在瀏海顯示結果。沒開也能傳。</li>
+          <li data-i="perm2!"><b>登入時自動開啟</b>（選用）：隨時可以在選單關掉。</li>
         </ol>
-        <p>檔案只透過 Apple 的 AirDrop 直接傳給對方，不經過任何伺服器。</p>
+        <p data-i="perm_note">檔案只透過 Apple 的 AirDrop 直接傳給對方，不經過任何伺服器。</p>
       </div>
     </div>
   </section>
 
   <section class="container" aria-labelledby="g-h">
     <div class="again">
-      <div class="who"><img src="icons/app-icon-256.png" alt="" width="48" height="48"><div><h2 id="g-h">傳送都ok</h2><p id="dlMeta2">免費，macOS 13 以上，已通過 Apple 公證</p></div></div>
-      <a class="btn" id="dlBtn2" href="#get" aria-disabled="true">下載</a>
+      <div class="who"><img src="icons/app-icon-256.png" alt="" width="48" height="48"><div><h2 id="g-h" data-i="name">傳送都ok</h2><p id="dlMeta2" data-i="meta2">免費，macOS 13 以上，已通過 Apple 公證</p></div></div>
+      <a class="btn" id="dlBtn2" href="#get" aria-disabled="true" data-i="dl">下載</a>
     </div>
   </section>
 </main>
 
 <footer class="foot">
   <div class="container">
-    <a href="manual/">使用說明</a>
-    <a href="privacy/">隱私權政策</a>
+    <a href="manual/" data-i="nav_manual">使用說明</a>
+    <a href="privacy/" data-i="nav_privacy">隱私權政策</a>
     <a href="mailto:imokahhhh@gmail.com">imokahhhh@gmail.com</a>
-    <a href="/">我都ok啊</a>
+    <a href="/" data-i="ch">我都ok啊</a>
   </div>
 </footer>
 
 <script>
 (function () {
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // 多國語言：ok-i18n 的 OK.t 會在頁尾載入；還沒載入時先用繁中
+  function T(k) { return window.OK ? OK.t(k) : ((window.OK_I18N || {})[k] || [''])[0]; }
+  function F(k, v) { return T(k).replace(/\{(\w+)\}/g, function (m, x) { return x in v ? v[x] : m; }); }
+  function L() { return window.OK ? OK.lang() : 'zh-Hant'; }
+  var latest = null, rels = null, pctKey = 'pct_run';
 
   // 下載：讀發版腳本產生的 latest.json；讀不到就維持「免費，macOS 13 以上」
   fetch('latest.json', { cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
     if (!d || !d.file) return;
+    latest = d; renderLatest();
+  }).catch(function () {});
+  function renderLatest() {
+    if (!latest) return;
+    var d = latest;
     ['dlBtn', 'dlBtn2'].forEach(function (id) {
       var b = document.getElementById(id);
-      b.href = d.file; b.removeAttribute('aria-disabled'); b.textContent = '下載 ' + d.version;
+      b.href = d.file; b.removeAttribute('aria-disabled'); b.removeAttribute('data-i'); b.textContent = F('dl_ver', { v: d.version });
     });
-    document.getElementById('dlMeta').textContent = '免費，macOS 13 以上，' + (d.size || '') + '，' + (d.date || '') + ' 發布';
-  }).catch(function () {});
+    var m = document.getElementById('dlMeta'); m.removeAttribute('data-i');
+    m.textContent = F('dl_meta', { size: d.size || '', date: d.date || '' });
+  }
 
   // 更新紀錄：直接讀 App 自動更新用的 appcast.xml，網頁和 App 內是同一份
   fetch('appcast.xml', { cache: 'no-store' }).then(function (r) { return r.ok ? r.text() : null; }).then(function (xml) {
     if (!xml) return;
     var items = Array.prototype.slice.call(new DOMParser().parseFromString(xml, 'application/xml').getElementsByTagName('item'), 0, 3);
     if (!items.length) return;
-    var list = document.getElementById('relList');
-    items.forEach(function (it) {
-      var v = (it.getElementsByTagNameNS('*', 'shortVersionString')[0] || it.getElementsByTagName('title')[0] || {}).textContent || '';
-      var pd = new Date((it.getElementsByTagName('pubDate')[0] || {}).textContent || '');
-      var ds = isNaN(pd) ? '' : pd.getFullYear() + ' 年 ' + (pd.getMonth() + 1) + ' 月 ' + pd.getDate() + ' 日';
+    rels = items.map(function (it) {
+      return {
+        v: (it.getElementsByTagNameNS('*', 'shortVersionString')[0] || it.getElementsByTagName('title')[0] || {}).textContent || '',
+        pd: new Date((it.getElementsByTagName('pubDate')[0] || {}).textContent || ''),
+        html: ((it.getElementsByTagName('description')[0] || {}).textContent || '').replace(/\s*·\s*/g, '，')
+      };
+    });
+    renderRels();
+  }).catch(function () {});
+  // 更新紀錄：繁中直接用 appcast.xml 的內容；其他語言用字典裡的 rel_<版本> 翻譯，沒有翻譯的新版本先顯示原文
+  var LOC = { 'zh-Hans': 'zh-CN', en: 'en-US', ja: 'ja-JP', ko: 'ko-KR', es: 'es', pt: 'pt-BR', hi: 'hi-IN', ms: 'ms-MY' };
+  function renderRels() {
+    if (!rels) return;
+    var lang = L(), list = document.getElementById('relList');
+    list.textContent = '';
+    rels.forEach(function (r) {
+      var pd = r.pd, ds = '';
+      if (!isNaN(pd)) {
+        if (lang === 'zh-Hant' || lang === 'zh-Hans') ds = pd.getFullYear() + ' 年 ' + (pd.getMonth() + 1) + ' 月 ' + pd.getDate() + ' 日';
+        else { try { ds = pd.toLocaleDateString(LOC[lang] || lang, { year: 'numeric', month: 'long', day: 'numeric' }); } catch (e) { ds = pd.toISOString().slice(0, 10); } }
+      }
+      var tr = lang !== 'zh-Hant' && (window.OK_I18N || {})['rel_' + r.v] ? T('rel_' + r.v) : '';
       var li = document.createElement('li');
       li.innerHTML = '<div class="rv"><b></b><span></span></div><div class="rd"></div>';
-      li.querySelector('b').textContent = v;
+      li.querySelector('b').textContent = r.v;
       li.querySelector('span').textContent = ds;
-      li.querySelector('.rd').innerHTML = ((it.getElementsByTagName('description')[0] || {}).textContent || '').replace(/\s*·\s*/g, '，');
+      var rd = li.querySelector('.rd');
+      rd.innerHTML = tr || r.html;
+      if (!tr && lang !== 'zh-Hant') rd.setAttribute('lang', 'zh-Hant');
       list.appendChild(li);
     });
     list.hidden = false;
     document.getElementById('relEmpty').hidden = true;
-  }).catch(function () {});
+  }
+  document.addEventListener('ok:lang', function () { renderLatest(); renderRels(); pctNote.textContent = T(pctKey); });
 
   // 示範畫面依寬度縮放（舞台 400 寬，左右各裁掉 30，讓瀏海大一點）
   var stages = Array.prototype.slice.call(document.querySelectorAll('.demo'));
@@ -466,7 +533,7 @@ html:not(.js) .demo .note .n1 { opacity: 1; }
   var pct = document.getElementById('pct'), pctNote = document.getElementById('pctNote'), raf;
   function ringStep(step) {
     cancelAnimationFrame(raf);
-    if (step === 'reset' || step === 's1') { pct.textContent = '0%'; pctNote.textContent = '傳送中'; }
+    if (step === 'reset' || step === 's1') { pct.textContent = '0%'; pctKey = 'pct_run'; pctNote.textContent = T(pctKey); }
     if (step === 's2') {
       var t0 = performance.now();
       (function tick(now) {
@@ -475,7 +542,7 @@ html:not(.js) .demo .note .n1 { opacity: 1; }
         if (r < 1) raf = requestAnimationFrame(tick);
       })(t0);
     }
-    if (step === 's3') { pct.textContent = '100%'; pctNote.textContent = '已送出'; }
+    if (step === 's3') { pct.textContent = '100%'; pctKey = 'pct_done'; pctNote.textContent = T(pctKey); }
   }
 
   var demo = document.getElementById('demo'), ring = document.getElementById('ringstage');
@@ -494,6 +561,90 @@ html:not(.js) .demo .note .n1 { opacity: 1; }
   document.addEventListener('visibilitychange', function () { if (document.hidden) runners.forEach(function (r) { r[1].stop(); }); });
 })();
 
+</script>
+<script>window.OK_I18N = {"name":["傳送都ok","传送都ok","Send OK","Send OK","Send OK","Send OK","Send OK","Send OK","Send OK"],"ch":["我都ok啊","我都ok啊","imokahhhh","imokahhhh","imokahhhh","imokahhhh","imokahhhh","imokahhhh","imokahhhh"],"nav_aria":["網站","网站","Site","サイト","사이트","Sitio","Site","साइट","Laman"],"nav_manual":["使用說明","使用说明","User guide","使い方","사용 안내","Guía de uso","Guia de uso","उपयोग गाइड","Panduan"],"nav_privacy":["隱私權政策","隐私政策","Privacy policy","プライバシー","개인정보 처리방침","Privacidad","Privacidade","गोपनीयता नीति","Privasi"],"foot_dl":["下載傳送都ok","下载传送都ok","Download Send OK","Send OK をダウンロード","Send OK 다운로드","Descargar Send OK","Baixar Send OK","Send OK डाउनलोड करें","Muat turun Send OK"],"_title":["傳送都ok：拖到 Mac 瀏海，放開就用 AirDrop 傳送","传送都ok：拖到 Mac 刘海，松开就用 AirDrop 发送","Send OK: drag to your Mac’s notch, let go to send with AirDrop","Send OK：Mac のノッチへドラッグ、離せば AirDrop で送信","Send OK: Mac 노치로 끌어다 놓으면 AirDrop으로 전송","Send OK: arrastra al notch de tu Mac y suelta para enviar por AirDrop","Send OK: arraste até o notch do Mac e solte para enviar por AirDrop","Send OK: Mac के नॉच तक खींचें, छोड़ते ही AirDrop से भेजें","Send OK: seret ke notch Mac, lepaskan untuk hantar dengan AirDrop"],"_desc":["把檔案拖到 Mac 瀏海，放開就用 AirDrop 傳送。選單列看進度，傳完自動關掉 AirDrop 視窗。免費。","把文件拖到 Mac 刘海，松开就用 AirDrop 发送。菜单栏看进度，发送完自动关闭 AirDrop 窗口。免费。","Drag files to your Mac’s notch and let go to send them with AirDrop. Track progress in the menu bar; the AirDrop window closes itself when done. Free.","ファイルを Mac のノッチへドラッグして離すだけで AirDrop 送信。進捗はメニューバーで確認でき、送信が終わると AirDrop ウインドウは自動で閉じます。無料。","파일을 Mac 노치로 끌어다 놓으면 AirDrop으로 전송됩니다. 진행 상황은 메뉴 막대에서 확인하고, 전송이 끝나면 AirDrop 창이 자동으로 닫힙니다. 무료.","Arrastra archivos al notch de tu Mac y suéltalos para enviarlos por AirDrop. Sigue el progreso en la barra de menús; la ventana de AirDrop se cierra sola al terminar. Gratis.","Arraste arquivos até o notch do Mac e solte para enviar por AirDrop. Acompanhe o progresso na barra de menus; a janela do AirDrop fecha sozinha no fim. Grátis.","फ़ाइलें Mac के नॉच तक खींचें और छोड़ते ही AirDrop से भेजें। प्रगति मेनू बार में देखें; भेजने के बाद AirDrop विंडो अपने‑आप बंद हो जाती है। मुफ़्त।","Seret fail ke notch Mac dan lepaskan untuk hantar dengan AirDrop. Lihat kemajuan di bar menu; tetingkap AirDrop tutup sendiri apabila selesai. Percuma."],"icon_alt":["傳送都ok 圖示","传送都ok 图标","Send OK icon","Send OK のアイコン","Send OK 아이콘","Icono de Send OK","Ícone do Send OK","Send OK आइकन","Ikon Send OK"],"lede":["把檔案拖到 Mac 瀏海，放開就用 AirDrop 傳送。","把文件拖到 Mac 刘海，松开就用 AirDrop 发送。","Drag files to your Mac’s notch and let go to send them with AirDrop.","ファイルを Mac のノッチへドラッグ。離せば AirDrop で送れます。","파일을 Mac 노치로 끌어다 놓으면 바로 AirDrop으로 보냅니다.","Arrastra archivos al notch de tu Mac y suéltalos para enviarlos por AirDrop.","Arraste arquivos até o notch do Mac e solte para enviar por AirDrop.","फ़ाइलें Mac के नॉच तक खींचें, छोड़ते ही AirDrop से भेज दें।","Seret fail ke notch Mac, lepaskan dan ia dihantar dengan AirDrop."],"dl":["下載","下载","Download","ダウンロード","다운로드","Descargar","Baixar","डाउनलोड","Muat turun"],"dl_ver":["下載 {v}","下载 {v}","Download {v}","ダウンロード {v}","{v} 다운로드","Descargar {v}","Baixar {v}","डाउनलोड {v}","Muat turun {v}"],"req":["免費，macOS 13 以上","免费，macOS 13 及以上","Free, macOS 13 or later","無料・macOS 13 以降","무료, macOS 13 이상","Gratis, macOS 13 o posterior","Grátis, macOS 13 ou posterior","मुफ़्त, macOS 13 या नया","Percuma, macOS 13 atau lebih baharu"],"dl_meta":["免費，macOS 13 以上，{size}，{date} 發布","免费，macOS 13 及以上，{size}，{date} 发布","Free, macOS 13 or later, {size}, released {date}","無料・macOS 13 以降・{size}・{date} 公開","무료, macOS 13 이상, {size}, {date} 출시","Gratis, macOS 13 o posterior, {size}, publicado el {date}","Grátis, macOS 13 ou posterior, {size}, lançado em {date}","मुफ़्त, macOS 13 या नया, {size}, {date} को जारी","Percuma, macOS 13 atau lebih baharu, {size}, dikeluarkan {date}"],"demo_aria":["示範：檔案拖到瀏海，瀏海展開成投放區，放開後用 AirDrop 送出，選單列的進度環補滿","演示：文件拖到刘海，刘海展开成投放区，松开后用 AirDrop 发出，菜单栏的进度环填满","Demo: a file is dragged to the notch, the notch opens into a drop zone, the file is sent with AirDrop on release, and the menu bar progress ring fills up","デモ：ファイルをノッチへドラッグするとノッチがドロップエリアに広がり、離すと AirDrop で送信され、メニューバーの進捗リングが満ちる","데모: 파일을 노치로 끌면 노치가 드롭 영역으로 펼쳐지고, 놓으면 AirDrop으로 전송되며 메뉴 막대의 진행 링이 가득 찹니다","Demostración: un archivo se arrastra al notch, el notch se abre como zona para soltar, al soltarlo se envía por AirDrop y el anillo de progreso de la barra de menús se completa","Demonstração: um arquivo é arrastado até o notch, o notch vira uma área para soltar, ao soltar ele é enviado por AirDrop e o anel de progresso da barra de menus se completa","डेमो: फ़ाइल नॉच तक खींची जाती है, नॉच ड्रॉप ज़ोन में खुलता है, छोड़ने पर AirDrop से भेजी जाती है और मेनू बार की प्रगति रिंग भर जाती है","Demo: fail diseret ke notch, notch terbuka menjadi zon lepas, apabila dilepaskan ia dihantar dengan AirDrop dan cincin kemajuan di bar menu menjadi penuh"],"items1":["1 個項目","1 个项目","1 item","1 項目","1개 항목","1 elemento","1 item","1 आइटम","1 item"],"items3":["3 個項目","3 个项目","3 items","3 項目","3개 항목","3 elementos","3 itens","3 आइटम","3 item"],"drop_here":["放開，用 AirDrop 傳送","松开，用 AirDrop 发送","Release to AirDrop","離して AirDrop で送信","놓으면 AirDrop으로 전송","Suelta para AirDrop","Solte para AirDrop","छोड़ें, AirDrop से भेजें","Lepas untuk AirDrop"],"opening":["正在打開 AirDrop…","正在打开 AirDrop…","Opening AirDrop…","AirDrop を開いています…","AirDrop 여는 중…","Abriendo AirDrop…","Abrindo o AirDrop…","AirDrop खुल रहा है…","Membuka AirDrop…"],"sent1":["已用 AirDrop 送出 1 個項目","已用 AirDrop 发出 1 个项目","Sent 1 item with AirDrop","AirDrop で 1 項目を送信済み","AirDrop으로 1개 항목 보냄","1 elemento enviado por AirDrop","1 item enviado por AirDrop","AirDrop से 1 आइटम भेजा गया","1 item dihantar dengan AirDrop"],"sent3":["已用 AirDrop 送出 3 個項目","已用 AirDrop 发出 3 个项目","Sent 3 items with AirDrop","AirDrop で 3 項目を送信済み","AirDrop으로 3개 항목 보냄","3 elementos enviados por AirDrop","3 itens enviados por AirDrop","AirDrop से 3 आइटम भेजे गए","3 item dihantar dengan AirDrop"],"note1":["拖到瀏海","拖到刘海","Drag to the notch","ノッチへドラッグ","노치로 끌기","Arrastra al notch","Arraste até o notch","नॉच तक खींचें","Seret ke notch"],"note2":["放開，在 AirDrop 視窗點要傳給誰","松开，在 AirDrop 窗口点选要发给谁","Let go, then pick who to send to in the AirDrop window","離して、AirDrop ウインドウで送り先をクリック","놓은 뒤 AirDrop 창에서 받을 사람을 클릭","Suelta y elige a quién enviarlo en la ventana de AirDrop","Solte e escolha para quem enviar na janela do AirDrop","छोड़ें, फिर AirDrop विंडो में चुनें कि किसे भेजना है","Lepaskan, kemudian pilih penerima dalam tetingkap AirDrop"],"note3":["傳完，選單列的圈補滿","发送完，菜单栏的圈填满","Once sent, the menu bar ring fills up","送信が終わると、メニューバーのリングが満ちる","전송이 끝나면 메뉴 막대의 링이 가득 참","Al terminar, el anillo de la barra de menús se completa","Ao terminar, o anel da barra de menus se completa","भेजने के बाद मेनू बार की रिंग भर जाती है","Selepas dihantar, cincin di bar menu menjadi penuh"],"m_h":["瀏海會告訴你","刘海会告诉你","The notch keeps you posted","ノッチが教えてくれる","노치가 알려 줍니다","El notch te avisa","O notch avisa você","नॉच आपको बताता है","Notch memberitahu anda"],"m_sub":["拖到一半改變主意，拖走就好","拖到一半改变主意，拖走就好","Changed your mind halfway? Just drag away","途中で気が変わったら、ドラッグして離れるだけ","끌다가 마음이 바뀌면 그냥 멀리 끌어내면 됩니다","¿Cambias de idea a mitad? Solo arrástralo fuera","Mudou de ideia no meio? É só arrastar para longe","बीच में मन बदल गया? बस दूर खींच लें","Ubah fikiran separuh jalan? Seret saja keluar"],"mo1_h":["靠近，先探出頭","靠近，先探出头","Get close, it peeks out","近づくと、ちらっと顔を出す","가까이 가면 살짝 나옵니다","Al acercarte, se asoma","Ao chegar perto, ele espia","पास लाएँ, वह झाँकता है","Dekatkan, ia menjenguk"],"mo1_p":["只認拖曳中的檔案，滑鼠路過不會亂跳。","只认拖拽中的文件，鼠标路过不会乱跳。","It only reacts to files being dragged, so a passing pointer won’t set it off.","反応するのはドラッグ中のファイルだけ。ポインタが通りかかっても勝手に動きません。","끌고 있는 파일에만 반응하므로 포인터가 지나가도 튀어나오지 않습니다.","Solo reacciona a archivos que se arrastran; pasar el puntero no lo activa.","Só reage a arquivos sendo arrastados; passar o ponteiro não faz nada pular.","यह सिर्फ़ खींची जा रही फ़ाइलों पर प्रतिक्रिया देता है, पॉइंटर गुज़रने पर नहीं उछलता।","Ia hanya bertindak balas pada fail yang diseret, jadi penuding yang lalu tidak membuatnya melompat."],"mo2_h":["碰到，展開成投放區","碰到，展开成投放区","Touch it, it opens into a drop zone","触れると、ドロップエリアに広がる","닿으면 드롭 영역으로 펼쳐집니다","Al tocarlo, se abre como zona para soltar","Ao tocar, vira uma área para soltar","छूते ही ड्रॉप ज़ोन खुलता है","Sentuh, ia terbuka menjadi zon lepas"],"mo2_p":["放開就打開 AirDrop，一次傳很多個也可以。","松开就打开 AirDrop，一次发很多个也可以。","Let go and AirDrop opens. Sending lots of files at once works too.","離すと AirDrop が開きます。複数のファイルもまとめて送れます。","놓으면 AirDrop이 열립니다. 여러 개를 한 번에 보내도 됩니다.","Suelta y se abre AirDrop. También puedes enviar muchos a la vez.","Solte e o AirDrop abre. Dá para enviar vários de uma vez.","छोड़ते ही AirDrop खुलता है, एक साथ कई फ़ाइलें भी भेज सकते हैं।","Lepaskan dan AirDrop dibuka. Boleh hantar banyak fail sekali gus."],"zone3":["照片 2，影片 1","照片 2，视频 1","2 photos, 1 video","写真 2、ビデオ 1","사진 2, 동영상 1","2 fotos, 1 video","2 fotos, 1 vídeo","2 फ़ोटो, 1 वीडियो","2 foto, 1 video"],"mo3_h":["送出，視窗自己關","发出，窗口自己关","Sent, and the window closes itself","送信したら、ウインドウは自動で閉じる","보내면 창이 알아서 닫힙니다","Enviado, y la ventana se cierra sola","Enviado, e a janela fecha sozinha","भेजते ही विंडो अपने‑आप बंद","Dihantar, tetingkap tutup sendiri"],"mo3_p":["對方收下後，AirDrop 視窗自動關掉，不用再按完成。","对方接收后，AirDrop 窗口自动关闭，不用再点完成。","Once they accept, the AirDrop window closes on its own. No need to click Done.","相手が受け取ると AirDrop ウインドウは自動で閉じ、「完了」を押す必要はありません。","상대가 받으면 AirDrop 창이 자동으로 닫혀서 완료를 누를 필요가 없습니다.","Cuando la otra persona lo acepta, la ventana de AirDrop se cierra sola. No hace falta pulsar Listo.","Quando a outra pessoa aceita, a janela do AirDrop fecha sozinha. Não precisa clicar em Concluído.","सामने वाला स्वीकार कर ले तो AirDrop विंडो अपने‑आप बंद हो जाती है, “हो गया” दबाने की ज़रूरत नहीं।","Selepas penerima menerimanya, tetingkap AirDrop tutup sendiri. Tak perlu klik Selesai."],"r_h":["選單列看進度","菜单栏看进度","Progress in the menu bar","進捗はメニューバーで","메뉴 막대에서 진행 상황 확인","Progreso en la barra de menús","Progresso na barra de menus","मेनू बार में प्रगति","Kemajuan di bar menu"],"r_p":["放開後，紙飛機縮進圈裡跑進度；傳完補滿一圈，換成勾勾。選單打開時也看得到還要幾秒。","松开后，纸飞机缩进圈里跑进度；发送完填满一圈，换成对勾。菜单打开时也看得到还要几秒。","After you let go, the paper plane shrinks into a ring that tracks progress. When it’s done, the ring fills and turns into a check mark. With the menu open you can also see how many seconds are left.","離すと紙飛行機がリングの中に縮み、進捗を表示。送信が終わるとリングが一周してチェックマークに変わります。メニューを開けば残り秒数も見られます。","놓으면 종이비행기가 링 안으로 줄어들며 진행 상황을 보여 줍니다. 전송이 끝나면 링이 한 바퀴 채워지고 체크 표시로 바뀝니다. 메뉴를 열면 남은 시간(초)도 볼 수 있습니다.","Al soltar, el avión de papel se encoge dentro de un anillo que muestra el progreso; al terminar, el anillo se completa y se convierte en una marca de verificación. Con el menú abierto también ves cuántos segundos faltan.","Ao soltar, o avião de papel encolhe dentro de um anel que mostra o progresso; ao terminar, o anel se completa e vira um sinal de visto. Com o menu aberto, você também vê quantos segundos faltam.","छोड़ने के बाद कागज़ी हवाई जहाज़ रिंग में सिकुड़कर प्रगति दिखाता है; भेजना पूरा होते ही रिंग भर जाती है और सही का निशान बन जाती है। मेनू खोलने पर यह भी दिखता है कि कितने सेकंड बाकी हैं।","Selepas dilepaskan, kapal terbang kertas mengecil ke dalam cincin yang menunjukkan kemajuan; apabila selesai, cincin menjadi penuh dan bertukar kepada tanda semak. Apabila menu dibuka, anda juga boleh lihat berapa saat lagi."],"pct_run":["傳送中","发送中","Sending","送信中","전송 중","Enviando","Enviando","भेजा जा रहा है","Menghantar"],"pct_done":["已送出","已发出","Sent","送信済み","보냄","Enviado","Enviado","भेजा गया","Dihantar"],"w_h":["不想拖的時候","不想拖的时候","When you’d rather not drag","ドラッグしたくないときは","끌기 싫을 때","Cuando no quieras arrastrar","Quando não quiser arrastar","जब खींचना न चाहें","Bila tak mahu seret"],"w_sub":["都在選單列的紙飛機裡","都在菜单栏的纸飞机里","It’s all in the paper plane in the menu bar","すべてメニューバーの紙飛行機の中に","모두 메뉴 막대의 종이비행기 안에 있습니다","Todo está en el avión de papel de la barra de menús","Está tudo no avião de papel da barra de menus","सब कुछ मेनू बार के कागज़ी हवाई जहाज़ में है","Semuanya dalam kapal terbang kertas di bar menu"],"w1_h":["傳送檔案","发送文件","Send Files","ファイルを送信","파일 보내기","Enviar archivos","Enviar arquivos","फ़ाइलें भेजें","Hantar Fail"],"w1_p":["選好檔案或資料夾，直接打開 AirDrop。","选好文件或文件夹，直接打开 AirDrop。","Pick files or folders and AirDrop opens right away.","ファイルやフォルダを選ぶと、すぐに AirDrop が開きます。","파일이나 폴더를 고르면 바로 AirDrop이 열립니다.","Elige archivos o carpetas y AirDrop se abre al instante.","Escolha arquivos ou pastas e o AirDrop abre na hora.","फ़ाइलें या फ़ोल्डर चुनें, AirDrop सीधे खुल जाता है।","Pilih fail atau folder, AirDrop terus dibuka."],"w2_h":["傳送剪貼簿的檔案","发送剪贴板中的文件","Send Files on Clipboard","クリップボードのファイルを送信","클립보드의 파일 보내기","Enviar archivos del portapapeles","Enviar arquivos da área de transferência","क्लिपबोर्ड की फ़ाइलें भेजें","Hantar Fail dari Papan Keratan"],"w2_p":["在 Finder 拷貝檔案後，一鍵傳出去。","在 Finder 拷贝文件后，一键发出去。","Copy files in Finder, then send them with one keystroke.","Finder でファイルをコピーしたら、ワンキーで送信。","Finder에서 파일을 복사한 뒤 단축키 하나로 보냅니다.","Copia archivos en el Finder y envíalos con un atajo.","Copie arquivos no Finder e envie com um atalho.","Finder में फ़ाइलें कॉपी करें, फिर एक शॉर्टकट से भेजें।","Salin fail dalam Finder, kemudian hantar dengan satu pintasan."],"w3_h":["最近傳送","最近发送","Recently Sent","最近の送信","최근 전송","Enviados recientes","Enviados recentemente","हाल में भेजी गई फ़ाइलें","Dihantar Baru-baru Ini"],"w3_kbd":["按住 ⌥","按住 ⌥","Hold ⌥","⌥ を押したまま","⌥ 누르기","Mantén ⌥","Segure ⌥","⌥ दबाए रखें","Tahan ⌥"],"w3_p":["最近 3 筆，點一下在 Finder 顯示，按住 Option 就能再傳一次。","最近 3 条，点一下在 Finder 中显示，按住 Option 就能再发一次。","Your last 3. Click to show in Finder; hold Option to send again.","直近 3 件。クリックで Finder に表示、Option を押したままで再送信。","최근 3개. 클릭하면 Finder에서 보여 주고, Option을 누르고 있으면 다시 보낼 수 있습니다.","Los 3 últimos. Haz clic para mostrarlo en el Finder; mantén Option para volver a enviarlo.","Os 3 últimos. Clique para mostrar no Finder; segure Option para enviar de novo.","आख़िरी 3। क्लिक करें तो Finder में दिखेगी; Option दबाए रखें तो फिर से भेजें।","3 terkini. Klik untuk tunjuk dalam Finder; tahan Option untuk hantar semula."],"get_aria":["更新紀錄與權限","更新记录与权限","Release notes and permissions","アップデート履歴と権限","업데이트 기록 및 권한","Novedades y permisos","Novidades e permissões","अपडेट इतिहास और अनुमतियाँ","Nota keluaran dan kebenaran"],"rel_h":["更新紀錄","更新记录","Release notes","アップデート履歴","업데이트 기록","Novedades","Novidades","अपडेट इतिहास","Nota keluaran"],"rel_empty":["更新紀錄讀取中。App 會自己下載新版本，沒在傳送時自己安裝。","正在读取更新记录。App 会自己下载新版本，不在发送时自己安装。","Loading release notes. The app downloads new versions by itself and installs them when it isn’t sending.","アップデート履歴を読み込み中。App は新しいバージョンを自動でダウンロードし、送信していないときにインストールします。","업데이트 기록을 불러오는 중입니다. 앱이 새 버전을 알아서 내려받고, 전송 중이 아닐 때 설치합니다.","Cargando novedades. La app descarga sola las nuevas versiones y las instala cuando no está enviando.","Carregando novidades. O app baixa novas versões sozinho e instala quando não está enviando.","अपडेट इतिहास लोड हो रहा है। ऐप नए वर्शन खुद डाउनलोड करता है और जब कुछ भेज नहीं रहा हो तब इंस्टॉल करता है।","Memuatkan nota keluaran. Apl memuat turun versi baharu sendiri dan memasangnya apabila tidak sedang menghantar."],"perm_h":["權限","权限","Permissions","権限","권한","Permisos","Permissões","अनुमतियाँ","Kebenaran"],"perm1!":["<b>輔助使用</b>（建議）：讀取 AirDrop 視窗的狀態，傳完自動關掉視窗，並在瀏海顯示結果。沒開也能傳。","<b>辅助功能</b>（建议）：读取 AirDrop 窗口的状态，发送完自动关闭窗口，并在刘海显示结果。不开也能发送。","<b>Accessibility</b> (recommended): reads the AirDrop window’s status so it can close the window when sending is done and show the result in the notch. Sending works without it.","<b>アクセシビリティ</b>（推奨）：AirDrop ウインドウの状態を読み取り、送信後にウインドウを自動で閉じて、結果をノッチに表示します。オフでも送信できます。","<b>손쉬운 사용</b>(권장): AirDrop 창의 상태를 읽어 전송이 끝나면 창을 자동으로 닫고 결과를 노치에 표시합니다. 켜지 않아도 보낼 수 있습니다.","<b>Accesibilidad</b> (recomendado): lee el estado de la ventana de AirDrop para cerrarla al terminar y mostrar el resultado en el notch. Sin él también puedes enviar.","<b>Acessibilidade</b> (recomendado): lê o status da janela do AirDrop para fechá-la ao terminar e mostrar o resultado no notch. Sem ela também dá para enviar.","<b>ऐक्सेसिबिलिटी</b> (सुझाया गया): AirDrop विंडो की स्थिति पढ़ता है, भेजने के बाद विंडो अपने‑आप बंद करता है और नतीजा नॉच में दिखाता है। इसके बिना भी भेज सकते हैं।","<b>Kebolehcapaian</b> (disyorkan): membaca status tetingkap AirDrop supaya tetingkap ditutup sendiri selepas dihantar dan hasilnya ditunjukkan di notch. Tanpanya pun masih boleh hantar."],"perm2!":["<b>登入時自動開啟</b>（選用）：隨時可以在選單關掉。","<b>登录时自动打开</b>（可选）：随时可以在菜单中关闭。","<b>Open at Login</b> (optional): turn it off from the menu anytime.","<b>ログイン時に開く</b>（任意）：メニューからいつでもオフにできます。","<b>로그인 시 자동 실행</b>(선택): 메뉴에서 언제든 끌 수 있습니다.","<b>Abrir al iniciar sesión</b> (opcional): desactívalo desde el menú cuando quieras.","<b>Abrir ao iniciar sessão</b> (opcional): desative pelo menu quando quiser.","<b>लॉगिन पर खोलें</b> (वैकल्पिक): मेनू से कभी भी बंद कर सकते हैं।","<b>Buka semasa Log Masuk</b> (pilihan): boleh dimatikan dari menu bila-bila masa."],"perm_note":["檔案只透過 Apple 的 AirDrop 直接傳給對方，不經過任何伺服器。","文件只通过 Apple 的 AirDrop 直接发给对方，不经过任何服务器。","Files go straight to the other person through Apple’s AirDrop, never through any server.","ファイルは Apple の AirDrop で相手に直接届き、どのサーバも経由しません。","파일은 Apple의 AirDrop을 통해 상대에게 바로 전달되며 어떤 서버도 거치지 않습니다.","Los archivos van directo a la otra persona por AirDrop de Apple, sin pasar por ningún servidor.","Os arquivos vão direto para a outra pessoa pelo AirDrop da Apple, sem passar por nenhum servidor.","फ़ाइलें Apple के AirDrop से सीधे सामने वाले तक जाती हैं, किसी सर्वर से होकर नहीं।","Fail dihantar terus kepada penerima melalui AirDrop Apple, tanpa melalui sebarang pelayan."],"meta2":["免費，macOS 13 以上，已通過 Apple 公證","免费，macOS 13 及以上，已通过 Apple 公证","Free, macOS 13 or later, notarized by Apple","無料・macOS 13 以降・Apple の公証済み","무료, macOS 13 이상, Apple 공증 완료","Gratis, macOS 13 o posterior, notarizada por Apple","Grátis, macOS 13 ou posterior, notarizado pela Apple","मुफ़्त, macOS 13 या नया, Apple द्वारा नोटराइज़्ड","Percuma, macOS 13 atau lebih baharu, dinotari oleh Apple"],"rel_1.1":["<ul>\n  <li>自動更新改成全自動：有新版本時在背景自己下載，沒在傳送時自己安裝並重新開啟，不用再按任何按鈕。</li>\n  <li>選單拿掉「預覽展開動畫」。</li>\n</ul>","<ul><li>自动更新改成全自动：有新版本时在后台自己下载，不在发送时自己安装并重新打开，不用再点任何按钮。</li><li>菜单移除了“预览展开动画”。</li></ul>","<ul><li>Updates are now fully automatic: new versions download in the background, then install and relaunch on their own when nothing is being sent. No more buttons to press.</li><li>Removed “Preview Expand Animation” from the menu.</li></ul>","<ul><li>アップデートが完全自動に：新しいバージョンはバックグラウンドで自動ダウンロードされ、送信していないときに自動でインストールして再起動します。ボタンを押す必要はもうありません。</li><li>メニューから「展開アニメーションをプレビュー」を削除しました。</li></ul>","<ul><li>자동 업데이트가 완전 자동으로 바뀌었습니다. 새 버전이 있으면 백그라운드에서 알아서 내려받고, 전송 중이 아닐 때 알아서 설치한 뒤 다시 실행합니다. 더 이상 버튼을 누를 필요가 없습니다.</li><li>메뉴에서 ‘펼치기 애니메이션 미리 보기’를 뺐습니다.</li></ul>","<ul><li>Las actualizaciones ahora son totalmente automáticas: las nuevas versiones se descargan en segundo plano y se instalan y reinician solas cuando no se está enviando nada. Ya no hay que pulsar ningún botón.</li><li>Se quitó «Previsualizar animación de apertura» del menú.</li></ul>","<ul><li>As atualizações agora são totalmente automáticas: novas versões são baixadas em segundo plano e se instalam e reabrem sozinhas quando nada está sendo enviado. Não é mais preciso apertar nenhum botão.</li><li>O item “Pré-visualizar animação de abertura” saiu do menu.</li></ul>","<ul><li>अपडेट अब पूरी तरह अपने‑आप: नया वर्शन बैकग्राउंड में खुद डाउनलोड होता है, और जब कुछ भेजा नहीं जा रहा हो तब खुद इंस्टॉल होकर दोबारा खुल जाता है। अब कोई बटन दबाने की ज़रूरत नहीं।</li><li>मेनू से “खुलने का एनिमेशन प्रीव्यू करें” हटा दिया गया।</li></ul>","<ul><li>Kemas kini kini automatik sepenuhnya: versi baharu dimuat turun di latar belakang, kemudian dipasang dan dibuka semula sendiri apabila tiada apa-apa sedang dihantar. Tak perlu tekan sebarang butang lagi.</li><li>“Pratonton Animasi Kembang” dibuang daripada menu.</li></ul>"],"rel_1.0":["<ul>\n  <li>第一個正式版本。把檔案拖到瀏海，靠近時瀏海先探出頭，碰到就展開成投放區，放開就打開 AirDrop。</li>\n  <li>放開後縮圖飛進瀏海；送出、取消、失敗都會在瀏海顯示結果，失敗時點一下就能重試。</li>\n  <li>選單列的紙飛機會變成進度環，傳完補滿一圈換成勾勾；選單打開時也能看到「60% · 約 8 秒」。</li>\n  <li>對方收下後自動關掉 AirDrop 視窗（需要「輔助使用」權限）。</li>\n  <li>選單可以「傳送檔案…」「傳送剪貼簿的檔案」，或把最近傳過的再傳一次。</li>\n  <li>新增自動更新：有新版本時在 App 內提示，點一下就能安裝。</li>\n</ul>","<ul><li>第一个正式版本。把文件拖到刘海，靠近时刘海先探出头，碰到就展开成投放区，松开就打开 AirDrop。</li><li>松开后缩略图飞进刘海；发出、取消、失败都会在刘海显示结果，失败时点一下就能重试。</li><li>菜单栏的纸飞机会变成进度环，发送完填满一圈换成对勾；菜单打开时也能看到“60%，约 8 秒”。</li><li>对方接收后自动关闭 AirDrop 窗口（需要“辅助功能”权限）。</li><li>菜单里可以“发送文件…”“发送剪贴板中的文件”，或把最近发过的再发一次。</li><li>新增自动更新：有新版本时在 App 内提示，点一下就能安装。</li></ul>","<ul><li>First official release. Drag files to the notch: it peeks out as you get close, opens into a drop zone when you touch it, and AirDrop opens when you let go.</li><li>After you let go, the thumbnail flies into the notch; sent, cancelled and failed results all show in the notch, and one click retries a failed send.</li><li>The paper plane in the menu bar turns into a progress ring that fills and becomes a check mark when done; with the menu open you also see “60%, about 8 seconds”.</li><li>The AirDrop window closes by itself once the other person accepts (requires the Accessibility permission).</li><li>From the menu you can “Send Files…”, “Send Files on Clipboard”, or send something recent again.</li><li>New auto-update: the app tells you when a new version is out, and one click installs it.</li></ul>","<ul><li>最初の正式版。ファイルをノッチへドラッグすると、近づいたときにノッチがちらっと顔を出し、触れるとドロップエリアに広がり、離すと AirDrop が開きます。</li><li>離すとサムネールがノッチへ飛び込み、送信・キャンセル・失敗の結果がノッチに表示されます。失敗したらクリックひとつで再試行できます。</li><li>メニューバーの紙飛行機が進捗リングに変わり、送信が終わると一周してチェックマークになります。メニューを開くと「60%、残り約 8 秒」も見られます。</li><li>相手が受け取ると AirDrop ウインドウを自動で閉じます（「アクセシビリティ」の権限が必要）。</li><li>メニューから「ファイルを送信…」「クリップボードのファイルを送信」、または最近送ったものをもう一度送信できます。</li><li>自動アップデートを追加：新しいバージョンがあると App 内でお知らせし、クリックひとつでインストールできます。</li></ul>","<ul><li>첫 정식 버전입니다. 파일을 노치로 끌면, 가까이 갈 때 노치가 살짝 나오고, 닿으면 드롭 영역으로 펼쳐지며, 놓으면 AirDrop이 열립니다.</li><li>놓으면 썸네일이 노치로 날아 들어가고, 보냄·취소·실패 결과가 모두 노치에 표시됩니다. 실패하면 한 번 클릭으로 다시 시도할 수 있습니다.</li><li>메뉴 막대의 종이비행기가 진행 링으로 바뀌고, 전송이 끝나면 한 바퀴 채워진 뒤 체크 표시로 바뀝니다. 메뉴를 열면 ‘60%, 약 8초’도 볼 수 있습니다.</li><li>상대가 받으면 AirDrop 창을 자동으로 닫습니다(‘손쉬운 사용’ 권한 필요).</li><li>메뉴에서 ‘파일 보내기…’, ‘클립보드의 파일 보내기’를 하거나 최근에 보낸 것을 다시 보낼 수 있습니다.</li><li>자동 업데이트 추가: 새 버전이 나오면 앱 안에서 알려 주고, 한 번 클릭으로 설치할 수 있습니다.</li></ul>","<ul><li>Primera versión oficial. Arrastra archivos al notch: se asoma al acercarte, se abre como zona para soltar al tocarlo y AirDrop se abre al soltar.</li><li>Al soltar, la miniatura vuela al notch; los envíos completados, cancelados y fallidos se muestran en el notch, y con un clic reintentas uno fallido.</li><li>El avión de papel de la barra de menús se convierte en un anillo de progreso que se completa y pasa a ser una marca de verificación al terminar; con el menú abierto también ves «60 %, unos 8 segundos».</li><li>La ventana de AirDrop se cierra sola cuando la otra persona acepta (requiere el permiso de Accesibilidad).</li><li>Desde el menú puedes «Enviar archivos…», «Enviar archivos del portapapeles» o volver a enviar algo reciente.</li><li>Nuevas actualizaciones automáticas: la app te avisa cuando hay una nueva versión y se instala con un clic.</li></ul>","<ul><li>Primeira versão oficial. Arraste arquivos até o notch: ele espia quando você chega perto, vira uma área para soltar ao tocar e o AirDrop abre quando você solta.</li><li>Ao soltar, a miniatura voa para o notch; envios concluídos, cancelados e com falha aparecem no notch, e um clique tenta de novo um envio que falhou.</li><li>O avião de papel da barra de menus vira um anel de progresso que se completa e vira um sinal de visto no fim; com o menu aberto você também vê “60%, cerca de 8 segundos”.</li><li>A janela do AirDrop fecha sozinha quando a outra pessoa aceita (requer a permissão de Acessibilidade).</li><li>Pelo menu dá para “Enviar arquivos…”, “Enviar arquivos da área de transferência” ou enviar de novo algo recente.</li><li>Atualização automática nova: o app avisa quando há uma versão nova e um clique instala.</li></ul>","<ul><li>पहला आधिकारिक वर्शन। फ़ाइलें नॉच तक खींचें: पास आते ही नॉच झाँकता है, छूने पर ड्रॉप ज़ोन में खुलता है, और छोड़ते ही AirDrop खुल जाता है।</li><li>छोड़ने के बाद थंबनेल उड़कर नॉच में जाता है; भेजा गया, रद्द हुआ या विफल, हर नतीजा नॉच में दिखता है, और विफल होने पर एक क्लिक से फिर कोशिश कर सकते हैं।</li><li>मेनू बार का कागज़ी हवाई जहाज़ प्रगति रिंग बन जाता है, भेजना पूरा होने पर रिंग भरकर सही का निशान बन जाती है; मेनू खोलने पर “60%, लगभग 8 सेकंड” भी दिखता है।</li><li>सामने वाले के स्वीकार करते ही AirDrop विंडो अपने‑आप बंद हो जाती है (“ऐक्सेसिबिलिटी” अनुमति ज़रूरी)।</li><li>मेनू से “फ़ाइलें भेजें…”, “क्लिपबोर्ड की फ़ाइलें भेजें” या हाल में भेजी चीज़ फिर से भेज सकते हैं।</li><li>नया ऑटो‑अपडेट: नया वर्शन आने पर ऐप के अंदर सूचना मिलती है, एक क्लिक से इंस्टॉल हो जाता है।</li></ul>","<ul><li>Versi rasmi pertama. Seret fail ke notch: ia menjenguk apabila anda dekat, terbuka menjadi zon lepas apabila disentuh, dan AirDrop dibuka apabila anda melepaskannya.</li><li>Selepas dilepaskan, lakaran kecil terbang ke dalam notch; hasil dihantar, dibatalkan atau gagal semuanya ditunjukkan di notch, dan satu klik mencuba semula penghantaran yang gagal.</li><li>Kapal terbang kertas di bar menu bertukar menjadi cincin kemajuan yang penuh dan menjadi tanda semak apabila selesai; apabila menu dibuka, anda juga nampak “60%, kira-kira 8 saat”.</li><li>Tetingkap AirDrop tutup sendiri selepas penerima menerimanya (memerlukan kebenaran Kebolehcapaian).</li><li>Dari menu anda boleh “Hantar Fail…”, “Hantar Fail dari Papan Keratan”, atau hantar semula item terkini.</li><li>Kemas kini automatik baharu: apl memberitahu apabila ada versi baharu, dan satu klik memasangnya.</li></ul>"]};</script>
+<script>// ok-i18n: imokahhhh.com 共用多國語言。順序 = 網址 ?lang= → 使用者上次選的（全站共用 ok-lang）→ 瀏覽器語言 → English
+// 用法：頁面先放一段 inline script 設定 window.OK_I18N = { key: [9 個語言] }（順序同 LANGS），再放這支程式。
+// 標記：data-i="key"（換 textContent；key 以 ! 結尾換 innerHTML）、data-ia="aria-label:key;title:key2"（換屬性）。
+// 特殊 key：_title（document.title）、_desc（meta description）。
+(function () {
+  var D = window.OK_I18N || {};
+  var LANGS = ['zh-Hant', 'zh-Hans', 'en', 'ja', 'ko', 'es', 'pt', 'hi', 'ms'];
+  var NAMES = { 'zh-Hant': '繁體中文', 'zh-Hans': '简体中文', en: 'English', ja: '日本語', ko: '한국어', es: 'Español', pt: 'Português', hi: 'हिन्दी', ms: 'Bahasa Melayu' };
+  var SHORT = { 'zh-Hant': '繁中', 'zh-Hans': '简中', en: 'EN', ja: '日本語', ko: '한국어', es: 'ES', pt: 'PT', hi: 'हिं', ms: 'MS' };
+  var cur = 'zh-Hant';
+  function norm(t) {
+    t = String(t || '').toLowerCase();
+    if (t.indexOf('zh') === 0) return /hant|-tw|-hk|-mo/.test(t) ? 'zh-Hant' : 'zh-Hans';
+    var b = t.split('-')[0];
+    if (b === 'id') return 'ms';
+    return LANGS.indexOf(b) >= 0 ? b : null;
+  }
+  function detect() {
+    var q = /[?&]lang=([\w-]+)/.exec(location.search);
+    if (q) { var n = LANGS.indexOf(q[1]) >= 0 ? q[1] : norm(q[1]); if (n) return n; }
+    try {
+      var saved = localStorage.getItem('ok-lang') || localStorage.getItem('bk-lang');
+      if (LANGS.indexOf(saved) >= 0) return saved;
+    } catch (e) {}
+    var list = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language];
+    for (var i = 0; i < list.length; i++) { var l = norm(list[i]); if (l) return l; }
+    return 'en';
+  }
+  function t(key, lang) {
+    var v = D[key]; if (!v) return '';
+    var s = v[LANGS.indexOf(lang || cur)];
+    return s == null || s === '' ? (v[2] || v[0]) : s;   // 缺翻譯時退回英文，再退回繁中
+  }
+  function fmt(s, vars) { return String(s).replace(/\{(\w+)\}/g, function (m, k) { return vars && k in vars ? vars[k] : m; }); }
+  function apply(lang) {
+    cur = lang;
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-i]').forEach(function (el) {
+      var k = el.getAttribute('data-i'), v = t(k);
+      if (!v) return;
+      if (k.slice(-1) === '!') el.innerHTML = v; else el.textContent = v;
+    });
+    document.querySelectorAll('[data-ia]').forEach(function (el) {
+      el.getAttribute('data-ia').split(';').forEach(function (pair) {
+        var p = pair.split(':'); if (p.length === 2 && D[p[1]]) el.setAttribute(p[0].trim(), t(p[1].trim()));
+      });
+    });
+    if (D._title) document.title = t('_title');
+    var md = document.querySelector('meta[name="description"]'); if (md && D._desc) md.setAttribute('content', t('_desc'));
+    var c = document.getElementById('langCur'); if (c) { c.textContent = SHORT[lang]; }
+    var b = document.getElementById('langBtn'); if (b) b.setAttribute('aria-label', 'Language: ' + NAMES[lang]);
+    document.querySelectorAll('#langMenu [role="menuitemradio"]').forEach(function (x) { x.setAttribute('aria-checked', String(x.getAttribute('lang') === lang)); });
+    document.dispatchEvent(new CustomEvent('ok:lang', { detail: lang }));
+  }
+  window.OK = { t: t, fmt: fmt, lang: function () { return cur; }, apply: apply, LANGS: LANGS };
+
+  // 語言選單：地球圖示 + 簡稱，點開是各語言的原文名稱
+  var btn = document.getElementById('langBtn'), menu = document.getElementById('langMenu'), wrap = document.getElementById('lang');
+  if (btn && menu && wrap) {
+    LANGS.forEach(function (l) {
+      var li = document.createElement('li'); li.setAttribute('role', 'none');
+      var x = document.createElement('button');
+      x.type = 'button'; x.setAttribute('role', 'menuitemradio'); x.setAttribute('lang', l); x.textContent = NAMES[l];
+      x.addEventListener('click', function () {
+        try { localStorage.setItem('ok-lang', l); } catch (e) {}
+        close(); apply(l); btn.focus();
+      });
+      li.appendChild(x); menu.appendChild(li);
+    });
+    var open = function () { menu.hidden = false; btn.setAttribute('aria-expanded', 'true'); var c = menu.querySelector('[aria-checked="true"]') || menu.querySelector('button'); c.focus(); };
+    var close = function () { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); };
+    btn.addEventListener('click', function () { if (menu.hidden) open(); else close(); });
+    document.addEventListener('click', function (e) { if (!menu.hidden && !wrap.contains(e.target)) close(); });
+    menu.addEventListener('keydown', function (e) {
+      var items = Array.prototype.slice.call(menu.querySelectorAll('button')), i = items.indexOf(document.activeElement);
+      if (e.key === 'Escape') { close(); btn.focus(); }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); items[(i + 1) % items.length].focus(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
+    });
+  }
+  apply(detect());
+})();
 </script>
 </body>
 </html>

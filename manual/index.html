@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-sceIOt0gpxLDvytZNnuUxyoiETSsYgsc3dvZy9iKEdg='; style-src 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; manifest-src 'self'; media-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-sceIOt0gpxLDvytZNnuUxyoiETSsYgsc3dvZy9iKEdg=' 'sha256-UE2TRhd/Hv9EqkH1xQ3i5010OACVEyKCk0q1zOqHlhQ=' 'sha256-D3caKY73TRkcxqV2fgw47Yta+Zq5LjPKTcOZ6GLD+VQ='; style-src 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; manifest-src 'self'; media-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>if (window.top !== window.self) document.documentElement.style.display = 'none';</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -138,115 +138,235 @@ section { padding-block: var(--space-xl); }
   .doc dd:first-of-type { padding-top: 0; }
 }
 
+/* ok-i18n 版面：語言按鈕放在導覽列最右；窄螢幕導覽列放不下時，imokahhhh 連結先收起（頁尾還有） */
+.nav { align-items: center; }
+:lang(ja) :is(h1, h2, h3) { word-break: auto-phrase; }
+@media (max-width: 40rem) { .nav > a[href="/"] { display: none; } }
+@media (max-width: 23.75rem) { .nav { gap: var(--space-sm); } .lang-btn { padding: 0 8px; } #langCur { display: none; } }
+/* ok-i18n:start */
+/* ok-i18n：語言選單與各語言字體。顏色、圓角、陰影全部走頁面自己的 token。 */
+:root:lang(zh-Hans) { --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Helvetica Neue", "Noto Sans SC", "Microsoft YaHei", sans-serif; --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Helvetica Neue", "Noto Sans SC", "Microsoft YaHei", sans-serif; }
+:root:lang(ja) { --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif; --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif; }
+:root:lang(ko) { --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; }
+:root:lang(hi) { --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Kohinoor Devanagari", "Noto Sans Devanagari", "Nirmala UI", sans-serif; --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Kohinoor Devanagari", "Noto Sans Devanagari", "Nirmala UI", sans-serif; }
+:root:lang(hi) body, :root:lang(ko) body, :root:lang(ja) body { letter-spacing: 0; }
+:root:lang(en), :root:lang(es), :root:lang(pt), :root:lang(ms), :root:lang(hi) { word-break: normal; overflow-wrap: break-word; }
+
+.lang { position: relative; flex: none; }
+.lang-btn { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 11px 0 9px; font: inherit; font-size: var(--text-xs, 12px); color: var(--color-ink-2); background: transparent; border: 1px solid var(--color-hairline); border-radius: var(--radius-pill, 9999px); cursor: pointer; white-space: nowrap; transition: color var(--dur, 240ms) var(--ease), border-color var(--dur, 240ms) var(--ease), background-color var(--dur, 240ms) var(--ease); }
+.lang-btn svg { width: 14px; height: 14px; flex: none; }
+.lang-btn:hover, .lang-btn[aria-expanded="true"] { color: var(--color-ink); border-color: var(--color-ink); }
+.lang-btn:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; transition: none; }
+.lang-btn:active { background: var(--color-band); }
+.lang-menu { position: absolute; right: 0; top: calc(100% + 8px); z-index: 30; min-width: 176px; max-height: min(70dvh, 420px); overflow-y: auto; margin: 0; padding: 6px; list-style: none; background: var(--color-card); border-radius: var(--radius-md, 14px); box-shadow: var(--shadow-lift); }
+.lang-menu[hidden] { display: none; }
+.lang-menu button { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 9px 12px; font: inherit; font-size: var(--text-sm, 14px); line-height: 1.35; letter-spacing: 0; color: var(--color-ink); background: transparent; border: 0; border-radius: 9px; cursor: pointer; text-align: left; }
+.lang-menu button[lang="zh-Hant"] { font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", sans-serif; }
+.lang-menu button[lang="zh-Hans"] { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif; }
+.lang-menu button[lang="ja"] { font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif; }
+.lang-menu button[lang="ko"] { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; }
+.lang-menu button[lang="hi"] { font-family: -apple-system, BlinkMacSystemFont, "Kohinoor Devanagari", "Noto Sans Devanagari", sans-serif; }
+.lang-menu button:hover { background: var(--color-band); }
+.lang-menu button:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
+.lang-menu button[aria-checked="true"]::after { content: ""; width: 9px; height: 5px; margin-top: -3px; border-left: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); }
+@media (prefers-reduced-motion: reduce) { .lang-btn { transition: none; } }
+/* ok-i18n:end */
 </style>
 </head>
 <body>
 <header class="bar">
   <div class="container bar-in">
-    <a class="brand" href="../">傳送都ok<small>我都ok啊</small></a>
-    <nav class="nav" aria-label="網站">
-      <a href="../manual/" aria-current="page">使用說明</a><a href="../privacy/">隱私權政策</a><a href="/">imokahhhh</a>
+    <a class="brand" href="../"><span data-i="name">傳送都ok</span><small data-i="ch">我都ok啊</small></a>
+    <nav class="nav" aria-label="網站" data-ia="aria-label:nav_aria">
+      <a href="../manual/" aria-current="page" data-i="nav_manual">使用說明</a><a href="../privacy/" data-i="nav_privacy">隱私權政策</a><a href="/">imokahhhh</a><div class="lang" id="lang">
+  <button type="button" class="lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false" aria-controls="langMenu" aria-label="Language"><svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="8" cy="8" r="6.3"/><path d="M1.7 8h12.6M8 1.7c1.8 1.7 2.7 3.8 2.7 6.3S9.8 12.6 8 14.3M8 1.7C6.2 3.4 5.3 5.5 5.3 8s.9 4.6 2.7 6.3"/></svg><span id="langCur">繁中</span></button>
+  <ul class="lang-menu" id="langMenu" role="menu" aria-label="Language" hidden></ul>
+</div>
     </nav>
   </div>
 </header>
 <main class="container">
   <article class="doc">
-    <h1>傳送都ok 使用說明</h1>
-    <p class="lede">把檔案拖到螢幕上方的瀏海，放開，點要傳給誰。下面是每個狀態代表什麼，還有其他傳送方式。</p>
-    <p class="meta">適用 1.1 以上</p>
-    <nav class="toc" aria-label="本頁目錄"><a href="#start">開始使用</a><a href="#drag">拖到瀏海</a><a href="#status">狀態</a><a href="#menu">從選單傳送</a><a href="#cancel">取消</a><a href="#perm">權限</a><a href="#faq">常見問題</a><a href="#update">更新與移除</a></nav>
+    <h1 data-i="h1">傳送都ok 使用說明</h1>
+    <p class="lede" data-i="lede">把檔案拖到螢幕上方的瀏海，放開，點要傳給誰。下面是每個狀態代表什麼，還有其他傳送方式。</p>
+    <p class="meta" data-i="meta">適用 1.1 以上</p>
+    <nav class="toc" aria-label="本頁目錄" data-ia="aria-label:toc_aria"><a href="#start" data-i="h_start">開始使用</a><a href="#drag" data-i="h_drag">拖到瀏海</a><a href="#status" data-i="toc_status">狀態</a><a href="#menu" data-i="h_menu">從選單傳送</a><a href="#cancel" data-i="h_cancel">取消</a><a href="#perm" data-i="h_perm">權限</a><a href="#faq" data-i="h_faq">常見問題</a><a href="#update" data-i="h_update">更新與移除</a></nav>
 
     <section class="part" aria-labelledby="start">
-      <h2 id="start">開始使用</h2>
+      <h2 id="start" data-i="h_start">開始使用</h2>
       <ol>
-        <li>打開下載的映像檔，把「傳送都ok」拖進「應用程式」資料夾，再打開它。</li>
-        <li>選單列會出現紙飛機圖示，代表已經在待命。</li>
-        <li>第一次打開會詢問「輔助使用」權限，建議開啟，說明在下方「權限」。</li>
-        <li>想每次開機都能用：在選單勾選<b>登入時自動開啟</b>。</li>
+        <li data-i="s1">打開下載的映像檔，把「傳送都ok」拖進「應用程式」資料夾，再打開它。</li>
+        <li data-i="s2">選單列會出現紙飛機圖示，代表已經在待命。</li>
+        <li data-i="s3">第一次打開會詢問「輔助使用」權限，建議開啟，說明在下方「權限」。</li>
+        <li data-i="s4!">想每次開機都能用：在選單勾選<b>登入時自動開啟</b>。</li>
       </ol>
     </section>
 
     <section class="part" aria-labelledby="drag">
-      <h2 id="drag">拖到瀏海</h2>
+      <h2 id="drag" data-i="h_drag">拖到瀏海</h2>
       <ol>
-        <li>從 Finder、桌面或「照片」拖起一個或多個檔案，資料夾也可以。</li>
-        <li>往螢幕上方的瀏海移動：靠近時瀏海會先探出頭，顯示縮圖和紙飛機。</li>
-        <li>碰到瀏海，它會展開成藍色的投放區「放開，用 AirDrop 傳送」，下面寫著檔名與大小。</li>
-        <li>放開。縮圖飛進瀏海，接著跳出系統的 AirDrop 視窗，點要傳給誰。</li>
-        <li>對方收下後，AirDrop 視窗自動關掉，瀏海顯示「已用 AirDrop 送出」。</li>
+        <li data-i="d1">從 Finder、桌面或「照片」拖起一個或多個檔案，資料夾也可以。</li>
+        <li data-i="d2">往螢幕上方的瀏海移動：靠近時瀏海會先探出頭，顯示縮圖和紙飛機。</li>
+        <li data-i="d3">碰到瀏海，它會展開成藍色的投放區「放開，用 AirDrop 傳送」，下面寫著檔名與大小。</li>
+        <li data-i="d4">放開。縮圖飛進瀏海，接著跳出系統的 AirDrop 視窗，點要傳給誰。</li>
+        <li data-i="d5">對方收下後，AirDrop 視窗自動關掉，瀏海顯示「已用 AirDrop 送出」。</li>
       </ol>
-      <p class="tip">只是路過，或拖到一半改變主意？把檔案拖離瀏海，它會自己收回，不會送出任何東西。沒有瀏海的 Mac，會在選單列正中間出現同樣的效果。</p>
+      <p class="tip" data-i="tip">只是路過，或拖到一半改變主意？把檔案拖離瀏海，它會自己收回，不會送出任何東西。沒有瀏海的 Mac，會在選單列正中間出現同樣的效果。</p>
     </section>
 
     <section class="part" aria-labelledby="status">
-      <h2 id="status">瀏海與選單列的狀態</h2>
+      <h2 id="status" data-i="h_status">瀏海與選單列的狀態</h2>
       <dl>
-        <dt>靠近</dt><dd>瀏海往兩邊探出頭，左邊是檔案縮圖，右邊是紙飛機。</dd>
-        <dt>展開</dt><dd>藍色投放區，放開就傳。</dd>
-        <dt>正在打開 AirDrop…</dt><dd>放開後到系統視窗出現之前。</dd>
-        <dt>選擇裝置</dt><dd>瀏海收回，看系統的 AirDrop 視窗；選單列的紙飛機縮進圈裡。</dd>
-        <dt>選單列進度環</dt><dd>點了人之後開始跑：依檔案大小估算跑到 90%，系統回報完成才補滿一圈，換成勾勾，1.2 秒後變回紙飛機。</dd>
-        <dt>已用 AirDrop 送出</dt><dd>綠色勾勾，1.6 秒後自己收起來。</dd>
-        <dt>沒有傳送</dt><dd>你按了取消，或關掉了 AirDrop 視窗。</dd>
-        <dt>傳送失敗，再試一次</dt><dd>AirDrop 沒有打開，例如 Wi‑Fi 或藍牙關著。點一下膠囊重新打開；滑鼠停在上面時不會自動收起。</dd>
+        <dt data-i="st1_t">靠近</dt><dd data-i="st1_d">瀏海往兩邊探出頭，左邊是檔案縮圖，右邊是紙飛機。</dd>
+        <dt data-i="st2_t">展開</dt><dd data-i="st2_d">藍色投放區，放開就傳。</dd>
+        <dt data-i="st3_t">正在打開 AirDrop…</dt><dd data-i="st3_d">放開後到系統視窗出現之前。</dd>
+        <dt data-i="st4_t">選擇裝置</dt><dd data-i="st4_d">瀏海收回，看系統的 AirDrop 視窗；選單列的紙飛機縮進圈裡。</dd>
+        <dt data-i="st5_t">選單列進度環</dt><dd data-i="st5_d">點了人之後開始跑：依檔案大小估算跑到 90%，系統回報完成才補滿一圈，換成勾勾，1.2 秒後變回紙飛機。</dd>
+        <dt data-i="st6_t">已用 AirDrop 送出</dt><dd data-i="st6_d">綠色勾勾，1.6 秒後自己收起來。</dd>
+        <dt data-i="st7_t">沒有傳送</dt><dd data-i="st7_d">你按了取消，或關掉了 AirDrop 視窗。</dd>
+        <dt data-i="st8_t">傳送失敗，再試一次</dt><dd data-i="st8_d">AirDrop 沒有打開，例如 Wi‑Fi 或藍牙關著。點一下膠囊重新打開；滑鼠停在上面時不會自動收起。</dd>
       </dl>
     </section>
 
     <section class="part" aria-labelledby="menu">
-      <h2 id="menu">從選單傳送</h2>
+      <h2 id="menu" data-i="h_menu">從選單傳送</h2>
       <ul>
-        <li><b>傳送檔案…</b>（<kbd>⌘O</kbd>）：選檔案或資料夾，直接打開 AirDrop。</li>
-        <li><b>傳送剪貼簿的檔案</b>（<kbd>⌃⌥V</kbd>）：在 Finder 拷貝（<kbd>⌘C</kbd>）檔案後使用；剪貼簿沒有檔案時這一項會變灰。</li>
-        <li><b>最近傳送</b>：列出最近 3 筆。點一下在 Finder 顯示檔案；按住 <kbd>⌥</kbd> 會變成「再傳一次」。不要了可以按「清除紀錄」。</li>
-        <li>傳送中時，選單最上面會顯示進度，例如「60%，約 8 秒」，選單開著也會即時更新。</li>
+        <li data-i="mn1!"><b>傳送檔案…</b>（<kbd>⌘O</kbd>）：選檔案或資料夾，直接打開 AirDrop。</li>
+        <li data-i="mn2!"><b>傳送剪貼簿的檔案</b>（<kbd>⌃⌥V</kbd>）：在 Finder 拷貝（<kbd>⌘C</kbd>）檔案後使用；剪貼簿沒有檔案時這一項會變灰。</li>
+        <li data-i="mn3!"><b>最近傳送</b>：列出最近 3 筆。點一下在 Finder 顯示檔案；按住 <kbd>⌥</kbd> 會變成「再傳一次」。不要了可以按「清除紀錄」。</li>
+        <li data-i="mn4">傳送中時，選單最上面會顯示進度，例如「60%，約 8 秒」，選單開著也會即時更新。</li>
       </ul>
     </section>
 
     <section class="part" aria-labelledby="cancel">
-      <h2 id="cancel">取消</h2>
+      <h2 id="cancel" data-i="h_cancel">取消</h2>
       <ul>
-        <li>在系統 AirDrop 視窗按「取消」，或在選單按「取消傳送」，效果一樣，都會關掉 AirDrop 視窗。</li>
-        <li>取消後瀏海會顯示「沒有傳送」，什麼都不會送出去。</li>
+        <li data-i="c1">在系統 AirDrop 視窗按「取消」，或在選單按「取消傳送」，效果一樣，都會關掉 AirDrop 視窗。</li>
+        <li data-i="c2">取消後瀏海會顯示「沒有傳送」，什麼都不會送出去。</li>
       </ul>
     </section>
 
     <section class="part" aria-labelledby="perm">
-      <h2 id="perm">權限</h2>
+      <h2 id="perm" data-i="h_perm">權限</h2>
       <ul>
-        <li><b>輔助使用</b>（建議）：讀取系統 AirDrop 視窗的狀態，傳完自動按「完成」，並在瀏海顯示結果。沒有開也能傳送，只是要自己關視窗，瀏海也不會顯示結果。之後想開：選單的<b>開啟輔助使用權限…</b>，或到「系統設定」的「隱私權與安全性」，在「輔助使用」裡打開「傳送都ok」。</li>
-        <li><b>登入時自動開啟</b>（選用）：使用 macOS 的登入項目。</li>
-        <li>不需要完整磁碟取用、螢幕錄製、相機、麥克風、位置或聯絡人權限。</li>
+        <li data-i="p1!"><b>輔助使用</b>（建議）：讀取系統 AirDrop 視窗的狀態，傳完自動按「完成」，並在瀏海顯示結果。沒有開也能傳送，只是要自己關視窗，瀏海也不會顯示結果。之後想開：選單的<b>開啟輔助使用權限…</b>，或到「系統設定」的「隱私權與安全性」，在「輔助使用」裡打開「傳送都ok」。</li>
+        <li data-i="p2!"><b>登入時自動開啟</b>（選用）：使用 macOS 的登入項目。</li>
+        <li data-i="p3">不需要完整磁碟取用、螢幕錄製、相機、麥克風、位置或聯絡人權限。</li>
       </ul>
     </section>
 
     <section class="part" aria-labelledby="faq">
-      <h2 id="faq">常見問題</h2>
+      <h2 id="faq" data-i="h_faq">常見問題</h2>
       <ul>
-        <li><b>AirDrop 視窗裡沒有人？</b>請對方打開 AirDrop，設成「所有人（10 分鐘）」或把你加入聯絡人；兩台裝置都要開 Wi‑Fi 與藍牙，距離不要太遠。</li>
-        <li><b>拖過去瀏海沒反應？</b>確認選單列有紙飛機，也就是 App 正在執行；只有拖曳「檔案」會觸發，文字或網址不會。</li>
-        <li><b>可以一次傳很多個嗎？</b>可以，多選後一起拖；瀏海會顯示「N 個項目」，下面列出照片與影片的數量和總大小。</li>
-        <li><b>傳完 AirDrop 視窗沒有自己關？</b>通常是還沒開「輔助使用」權限，或權限在更新後被系統關掉了，到系統設定重新打開即可。</li>
+        <li data-i="f1!"><b>AirDrop 視窗裡沒有人？</b>請對方打開 AirDrop，設成「所有人（10 分鐘）」或把你加入聯絡人；兩台裝置都要開 Wi‑Fi 與藍牙，距離不要太遠。</li>
+        <li data-i="f2!"><b>拖過去瀏海沒反應？</b>確認選單列有紙飛機，也就是 App 正在執行；只有拖曳「檔案」會觸發，文字或網址不會。</li>
+        <li data-i="f3!"><b>可以一次傳很多個嗎？</b>可以，多選後一起拖；瀏海會顯示「N 個項目」，下面列出照片與影片的數量和總大小。</li>
+        <li data-i="f4!"><b>傳完 AirDrop 視窗沒有自己關？</b>通常是還沒開「輔助使用」權限，或權限在更新後被系統關掉了，到系統設定重新打開即可。</li>
       </ul>
     </section>
 
     <section class="part" aria-labelledby="update">
-      <h2 id="update">更新與移除</h2>
+      <h2 id="update" data-i="h_update">更新與移除</h2>
       <ul>
-        <li>1.1 起全自動更新：有新版本時在背景下載，沒在傳送時自己安裝並重新開啟，不用按任何按鈕。想馬上檢查，可以按選單的<b>檢查更新…</b>。</li>
-        <li>還在用 1.0 的話，會先跳出一次更新視窗，按「安裝」升到 1.1，之後就是全自動。</li>
-        <li>移除：在選單按<b>結束傳送都ok</b>，再把「應用程式」裡的傳送都ok 丟到垃圾桶。</li>
+        <li data-i="u1!">1.1 起全自動更新：有新版本時在背景下載，沒在傳送時自己安裝並重新開啟，不用按任何按鈕。想馬上檢查，可以按選單的<b>檢查更新…</b>。</li>
+        <li data-i="u2">還在用 1.0 的話，會先跳出一次更新視窗，按「安裝」升到 1.1，之後就是全自動。</li>
+        <li data-i="u3!">移除：在選單按<b>結束傳送都ok</b>，再把「應用程式」裡的傳送都ok 丟到垃圾桶。</li>
       </ul>
     </section>
   </article>
 </main>
 <footer class="foot">
   <div class="container">
-    <a href="../">下載傳送都ok</a>
-    <a href="../manual/">使用說明</a>
-    <a href="../privacy/">隱私權政策</a>
+    <a href="../" data-i="foot_dl">下載傳送都ok</a>
+    <a href="../manual/" data-i="nav_manual">使用說明</a>
+    <a href="../privacy/" data-i="nav_privacy">隱私權政策</a>
     <a href="mailto:imokahhhh@gmail.com">imokahhhh@gmail.com</a>
-    <a href="/">我都ok啊</a>
+    <a href="/" data-i="ch">我都ok啊</a>
   </div>
 </footer>
+<script>window.OK_I18N = {"name":["傳送都ok","传送都ok","Send OK","Send OK","Send OK","Send OK","Send OK","Send OK","Send OK"],"ch":["我都ok啊","我都ok啊","imokahhhh","imokahhhh","imokahhhh","imokahhhh","imokahhhh","imokahhhh","imokahhhh"],"nav_aria":["網站","网站","Site","サイト","사이트","Sitio","Site","साइट","Laman"],"nav_manual":["使用說明","使用说明","User guide","使い方","사용 안내","Guía de uso","Guia de uso","उपयोग गाइड","Panduan"],"nav_privacy":["隱私權政策","隐私政策","Privacy policy","プライバシー","개인정보 처리방침","Privacidad","Privacidade","गोपनीयता नीति","Privasi"],"foot_dl":["下載傳送都ok","下载传送都ok","Download Send OK","Send OK をダウンロード","Send OK 다운로드","Descargar Send OK","Baixar Send OK","Send OK डाउनलोड करें","Muat turun Send OK"],"_title":["使用說明：傳送都ok","使用说明：传送都ok","User guide: Send OK","使い方：Send OK","사용 안내: Send OK","Guía de uso: Send OK","Guia de uso: Send OK","उपयोग गाइड: Send OK","Panduan: Send OK"],"_desc":["傳送都ok 使用說明：拖到瀏海傳送、選單傳送、狀態說明、權限與常見問題。","传送都ok 使用说明：拖到刘海发送、菜单发送、状态说明、权限与常见问题。","Send OK user guide: sending by dragging to the notch, sending from the menu, what each status means, permissions and FAQ.","Send OK の使い方：ノッチへドラッグして送信、メニューから送信、状態の説明、権限とよくある質問。","Send OK 사용 안내: 노치로 끌어서 보내기, 메뉴에서 보내기, 상태 설명, 권한 및 자주 묻는 질문.","Guía de uso de Send OK: enviar arrastrando al notch, enviar desde el menú, qué significa cada estado, permisos y preguntas frecuentes.","Guia de uso do Send OK: enviar arrastrando até o notch, enviar pelo menu, o que cada status significa, permissões e perguntas frequentes.","Send OK उपयोग गाइड: नॉच तक खींचकर भेजना, मेनू से भेजना, हर स्थिति का मतलब, अनुमतियाँ और अक्सर पूछे जाने वाले सवाल।","Panduan Send OK: hantar dengan menyeret ke notch, hantar dari menu, maksud setiap status, kebenaran dan soalan lazim."],"h1":["傳送都ok 使用說明","传送都ok 使用说明","Send OK user guide","Send OK の使い方","Send OK 사용 안내","Guía de uso de Send OK","Guia de uso do Send OK","Send OK उपयोग गाइड","Panduan Send OK"],"lede":["把檔案拖到螢幕上方的瀏海，放開，點要傳給誰。下面是每個狀態代表什麼，還有其他傳送方式。","把文件拖到屏幕上方的刘海，松开，点选要发给谁。下面是每个状态代表什么，还有其他发送方式。","Drag files to the notch at the top of the screen, let go, and click who to send to. Below: what each status means, plus other ways to send.","ファイルを画面上部のノッチへドラッグして離し、送り先をクリック。以下は各状態の意味と、ほかの送り方です。","파일을 화면 위쪽 노치로 끌어다 놓고, 받을 사람을 클릭하세요. 아래는 각 상태의 의미와 다른 전송 방법입니다.","Arrastra archivos al notch de la parte superior de la pantalla, suéltalos y haz clic en a quién enviarlos. Abajo verás qué significa cada estado y otras formas de enviar.","Arraste arquivos até o notch no topo da tela, solte e clique em para quem enviar. Abaixo, o que cada status significa e outras formas de enviar.","फ़ाइलें स्क्रीन के ऊपर वाले नॉच तक खींचें, छोड़ें, और चुनें कि किसे भेजना है। नीचे हर स्थिति का मतलब और भेजने के दूसरे तरीके हैं।","Seret fail ke notch di bahagian atas skrin, lepaskan, dan klik penerima. Di bawah: maksud setiap status, serta cara lain untuk menghantar."],"meta":["適用 1.1 以上","适用于 1.1 及以上","For version 1.1 or later","バージョン 1.1 以降向け","1.1 이상용","Para la versión 1.1 o posterior","Para a versão 1.1 ou posterior","वर्शन 1.1 या नए के लिए","Untuk versi 1.1 atau lebih baharu"],"toc_aria":["本頁目錄","本页目录","On this page","このページの目次","이 페이지 목차","En esta página","Nesta página","इस पेज पर","Dalam halaman ini"],"h_start":["開始使用","开始使用","Getting started","はじめに","시작하기","Primeros pasos","Primeiros passos","शुरुआत","Bermula"],"h_drag":["拖到瀏海","拖到刘海","Drag to the notch","ノッチへドラッグ","노치로 끌기","Arrastrar al notch","Arrastar até o notch","नॉच तक खींचें","Seret ke notch"],"toc_status":["狀態","状态","Status","状態","상태","Estados","Status","स्थितियाँ","Status"],"h_status":["瀏海與選單列的狀態","刘海与菜单栏的状态","Notch and menu bar status","ノッチとメニューバーの状態","노치와 메뉴 막대의 상태","Estados del notch y la barra de menús","Status do notch e da barra de menus","नॉच और मेनू बार की स्थितियाँ","Status notch dan bar menu"],"h_menu":["從選單傳送","从菜单发送","Send from the menu","メニューから送信","메뉴에서 보내기","Enviar desde el menú","Enviar pelo menu","मेनू से भेजें","Hantar dari menu"],"h_cancel":["取消","取消","Cancel","キャンセル","취소","Cancelar","Cancelar","रद्द करें","Batal"],"h_perm":["權限","权限","Permissions","権限","권한","Permisos","Permissões","अनुमतियाँ","Kebenaran"],"h_faq":["常見問題","常见问题","FAQ","よくある質問","자주 묻는 질문","Preguntas frecuentes","Perguntas frequentes","अक्सर पूछे जाने वाले सवाल","Soalan lazim"],"h_update":["更新與移除","更新与移除","Updating and removing","アップデートと削除","업데이트 및 제거","Actualizar y desinstalar","Atualizar e remover","अपडेट और हटाना","Kemas kini dan alih keluar"],"s1":["打開下載的映像檔，把「傳送都ok」拖進「應用程式」資料夾，再打開它。","打开下载的映像文件，把“传送都ok”拖进“应用程序”文件夹，再打开它。","Open the downloaded disk image, drag “Send OK” into the Applications folder, then open it.","ダウンロードしたディスクイメージを開き、「Send OK」を「アプリケーション」フォルダへドラッグしてから開きます。","다운로드한 디스크 이미지를 열고 ‘Send OK’를 ‘응용 프로그램’ 폴더로 끈 다음 실행하세요.","Abre la imagen de disco descargada, arrastra «Send OK» a la carpeta Aplicaciones y ábrela.","Abra a imagem de disco baixada, arraste o “Send OK” para a pasta Aplicativos e abra-o.","डाउनलोड की गई डिस्क इमेज खोलें, “Send OK” को Applications फ़ोल्डर में खींचें, फिर उसे खोलें।","Buka imej cakera yang dimuat turun, seret “Send OK” ke dalam folder Aplikasi, kemudian bukanya."],"s2":["選單列會出現紙飛機圖示，代表已經在待命。","菜单栏会出现纸飞机图标，表示已经在待命。","A paper plane icon appears in the menu bar, meaning it’s ready.","メニューバーに紙飛行機のアイコンが表示されたら、待機中です。","메뉴 막대에 종이비행기 아이콘이 나타나면 대기 중이라는 뜻입니다.","Aparece un icono de avión de papel en la barra de menús: ya está listo.","Um ícone de avião de papel aparece na barra de menus, indicando que está pronto.","मेनू बार में कागज़ी हवाई जहाज़ का आइकन दिखेगा, यानी ऐप तैयार है।","Ikon kapal terbang kertas muncul di bar menu, tandanya ia sudah bersedia."],"s3":["第一次打開會詢問「輔助使用」權限，建議開啟，說明在下方「權限」。","第一次打开会请求“辅助功能”权限，建议开启，说明见下方“权限”。","The first time you open it, it asks for the Accessibility permission. We recommend turning it on; see “Permissions” below.","初めて開くと「アクセシビリティ」の権限を求められます。オンにするのがおすすめです。詳しくは下の「権限」を参照してください。","처음 실행하면 ‘손쉬운 사용’ 권한을 요청합니다. 켜는 것을 권장하며, 자세한 내용은 아래 ‘권한’에 있습니다.","La primera vez que la abras te pedirá el permiso de Accesibilidad. Te recomendamos activarlo; consulta «Permisos» más abajo.","Na primeira vez que você abrir, ele pede a permissão de Acessibilidade. Recomendamos ativar; veja “Permissões” abaixo.","पहली बार खोलने पर यह “ऐक्सेसिबिलिटी” अनुमति माँगेगा। इसे चालू करने का सुझाव है; नीचे “अनुमतियाँ” देखें।","Kali pertama dibuka, ia meminta kebenaran Kebolehcapaian. Kami syorkan anda menghidupkannya; lihat “Kebenaran” di bawah."],"s4!":["想每次開機都能用：在選單勾選<b>登入時自動開啟</b>。","想每次开机都能用：在菜单中勾选<b>登录时自动打开</b>。","To have it every time you start up, check <b>Open at Login</b> in the menu.","起動するたびに使いたい場合は、メニューで<b>ログイン時に開く</b>にチェックを入れます。","켤 때마다 사용하려면 메뉴에서 <b>로그인 시 자동 실행</b>을 선택하세요.","Para tenerla siempre al encender el Mac, marca <b>Abrir al iniciar sesión</b> en el menú.","Para ter o app sempre que ligar o Mac, marque <b>Abrir ao iniciar sessão</b> no menu.","हर बार Mac चालू होने पर इस्तेमाल करना हो तो मेनू में <b>लॉगिन पर खोलें</b> चुनें।","Untuk menggunakannya setiap kali Mac dihidupkan, tandakan <b>Buka semasa Log Masuk</b> dalam menu."],"d1":["從 Finder、桌面或「照片」拖起一個或多個檔案，資料夾也可以。","从 Finder、桌面或“照片”拖起一个或多个文件，文件夹也可以。","Pick up one or more files from Finder, the desktop or Photos. Folders work too.","Finder、デスクトップ、または「写真」から 1 つ以上のファイルをドラッグします。フォルダも OK です。","Finder, 데스크탑 또는 ‘사진’에서 파일을 하나 이상 끌어 옵니다. 폴더도 됩니다.","Arrastra uno o varios archivos desde el Finder, el escritorio o Fotos. También sirven carpetas.","Arraste um ou mais arquivos do Finder, da mesa ou do Fotos. Pastas também funcionam.","Finder, डेस्कटॉप या Photos से एक या ज़्यादा फ़ाइलें उठाएँ। फ़ोल्डर भी चलेंगे।","Seret satu atau lebih fail dari Finder, desktop atau Foto. Folder juga boleh."],"d2":["往螢幕上方的瀏海移動：靠近時瀏海會先探出頭，顯示縮圖和紙飛機。","往屏幕上方的刘海移动：靠近时刘海会先探出头，显示缩略图和纸飞机。","Move toward the notch at the top of the screen: as you get close, it peeks out and shows a thumbnail and a paper plane.","画面上部のノッチへ近づけると、ノッチがちらっと顔を出し、サムネールと紙飛行機を表示します。","화면 위쪽 노치로 가져가면, 가까이 갈 때 노치가 살짝 나오면서 썸네일과 종이비행기를 보여 줍니다.","Muévelos hacia el notch de la parte superior: al acercarte, se asoma y muestra una miniatura y un avión de papel.","Leve até o notch no topo da tela: ao chegar perto, ele espia e mostra uma miniatura e um avião de papel.","स्क्रीन के ऊपर वाले नॉच की ओर ले जाएँ: पास आते ही नॉच झाँकता है और थंबनेल व कागज़ी हवाई जहाज़ दिखाता है।","Gerakkan ke arah notch di bahagian atas skrin: apabila dekat, ia menjenguk dan menunjukkan lakaran kecil serta kapal terbang kertas."],"d3":["碰到瀏海，它會展開成藍色的投放區「放開，用 AirDrop 傳送」，下面寫著檔名與大小。","碰到刘海，它会展开成蓝色的投放区“松开，用 AirDrop 发送”，下面写着文件名与大小。","Touch the notch and it opens into a blue drop zone, “Release to AirDrop”, with the file name and size below.","ノッチに触れると青いドロップエリア「離して AirDrop で送信」に広がり、その下にファイル名とサイズが表示されます。","노치에 닿으면 파란색 드롭 영역 ‘놓으면 AirDrop으로 전송’으로 펼쳐지고, 아래에 파일 이름과 크기가 표시됩니다.","Al tocar el notch, se abre una zona azul, «Suelta para AirDrop», con el nombre y el tamaño del archivo debajo.","Ao tocar o notch, ele vira uma área azul, “Solte para AirDrop”, com o nome e o tamanho do arquivo embaixo.","नॉच को छूते ही वह नीले ड्रॉप ज़ोन “छोड़ें, AirDrop से भेजें” में खुल जाता है, नीचे फ़ाइल का नाम और साइज़ लिखा होता है।","Sentuh notch dan ia terbuka menjadi zon lepas biru, “Lepas untuk AirDrop”, dengan nama dan saiz fail di bawahnya."],"d4":["放開。縮圖飛進瀏海，接著跳出系統的 AirDrop 視窗，點要傳給誰。","松开。缩略图飞进刘海，接着弹出系统的 AirDrop 窗口，点选要发给谁。","Let go. The thumbnail flies into the notch, then the system AirDrop window pops up. Click who to send to.","離します。サムネールがノッチへ飛び込み、システムの AirDrop ウインドウが開くので、送り先をクリックします。","놓으세요. 썸네일이 노치로 날아 들어가고 시스템 AirDrop 창이 뜨면 받을 사람을 클릭합니다.","Suelta. La miniatura vuela al notch y aparece la ventana de AirDrop del sistema; haz clic en a quién enviarlo.","Solte. A miniatura voa para o notch e aparece a janela do AirDrop do sistema; clique em para quem enviar.","छोड़ दें। थंबनेल उड़कर नॉच में जाता है, फिर सिस्टम की AirDrop विंडो खुलती है; चुनें कि किसे भेजना है।","Lepaskan. Lakaran kecil terbang ke dalam notch, kemudian tetingkap AirDrop sistem muncul. Klik penerima."],"d5":["對方收下後，AirDrop 視窗自動關掉，瀏海顯示「已用 AirDrop 送出」。","对方接收后，AirDrop 窗口自动关闭，刘海显示“已用 AirDrop 发出”。","Once they accept, the AirDrop window closes on its own and the notch shows “Sent with AirDrop”.","相手が受け取ると AirDrop ウインドウは自動で閉じ、ノッチに「AirDrop で送信済み」と表示されます。","상대가 받으면 AirDrop 창이 자동으로 닫히고 노치에 ‘AirDrop으로 보냄’이 표시됩니다.","Cuando la otra persona acepta, la ventana de AirDrop se cierra sola y el notch muestra «Enviado por AirDrop».","Quando a outra pessoa aceita, a janela do AirDrop fecha sozinha e o notch mostra “Enviado por AirDrop”.","सामने वाले के स्वीकार करते ही AirDrop विंडो अपने‑आप बंद हो जाती है और नॉच में “AirDrop से भेजा गया” दिखता है।","Selepas penerima menerimanya, tetingkap AirDrop tutup sendiri dan notch menunjukkan “Dihantar dengan AirDrop”."],"tip":["只是路過，或拖到一半改變主意？把檔案拖離瀏海，它會自己收回，不會送出任何東西。沒有瀏海的 Mac，會在選單列正中間出現同樣的效果。","只是路过，或拖到一半改变主意？把文件拖离刘海，它会自己收回，不会发出任何东西。没有刘海的 Mac，会在菜单栏正中间出现同样的效果。","Just passing by, or changed your mind halfway? Drag the files away from the notch and it tucks itself back in without sending anything. On a Mac without a notch, the same effect appears in the middle of the menu bar.","通りかかっただけ、または途中で気が変わったら？ファイルをノッチから離せば自動で引っ込み、何も送信されません。ノッチのない Mac では、メニューバーの中央に同じ効果が表示されます。","그냥 지나가거나 끌다가 마음이 바뀌었나요? 파일을 노치에서 멀리 끌면 알아서 들어가고 아무것도 보내지 않습니다. 노치가 없는 Mac에서는 메뉴 막대 한가운데에 같은 효과가 나타납니다.","¿Solo pasabas o cambiaste de idea a mitad? Aleja los archivos del notch y se recoge solo sin enviar nada. En un Mac sin notch, el mismo efecto aparece en el centro de la barra de menús.","Só estava passando ou mudou de ideia no meio? Afaste os arquivos do notch e ele se recolhe sozinho, sem enviar nada. Em um Mac sem notch, o mesmo efeito aparece no meio da barra de menus.","बस गुज़र रहे थे, या बीच में मन बदल गया? फ़ाइलें नॉच से दूर खींच लें, वह अपने‑आप वापस सिमट जाएगा और कुछ नहीं भेजा जाएगा। बिना नॉच वाले Mac पर यही असर मेनू बार के बीचोंबीच दिखता है।","Sekadar lalu, atau ubah fikiran separuh jalan? Seret fail menjauhi notch dan ia akan masuk semula sendiri tanpa menghantar apa-apa. Pada Mac tanpa notch, kesan yang sama muncul di tengah-tengah bar menu."],"st1_t":["靠近","靠近","Close","接近","가까이","Cerca","Perto","पास","Dekat"],"st1_d":["瀏海往兩邊探出頭，左邊是檔案縮圖，右邊是紙飛機。","刘海往两边探出头，左边是文件缩略图，右边是纸飞机。","The notch peeks out on both sides: the file thumbnail on the left, the paper plane on the right.","ノッチが左右にちらっと広がり、左にファイルのサムネール、右に紙飛行機が表示されます。","노치가 양옆으로 살짝 나오며 왼쪽에 파일 썸네일, 오른쪽에 종이비행기가 보입니다.","El notch se asoma a ambos lados: la miniatura del archivo a la izquierda y el avión de papel a la derecha.","O notch espia para os dois lados: a miniatura do arquivo à esquerda e o avião de papel à direita.","नॉच दोनों ओर झाँकता है: बाईं ओर फ़ाइल का थंबनेल, दाईं ओर कागज़ी हवाई जहाज़।","Notch menjenguk ke kedua-dua sisi: lakaran kecil fail di kiri, kapal terbang kertas di kanan."],"st2_t":["展開","展开","Open","展開","펼침","Abierto","Aberto","खुला","Terbuka"],"st2_d":["藍色投放區，放開就傳。","蓝色投放区，松开就发送。","A blue drop zone. Let go to send.","青いドロップエリア。離せば送信。","파란색 드롭 영역. 놓으면 보냅니다.","Una zona azul para soltar. Suelta para enviar.","Uma área azul para soltar. Solte para enviar.","नीला ड्रॉप ज़ोन। छोड़ते ही भेजें।","Zon lepas biru. Lepaskan untuk hantar."],"st3_t":["正在打開 AirDrop…","正在打开 AirDrop…","Opening AirDrop…","AirDrop を開いています…","AirDrop 여는 중…","Abriendo AirDrop…","Abrindo o AirDrop…","AirDrop खुल रहा है…","Membuka AirDrop…"],"st3_d":["放開後到系統視窗出現之前。","松开后到系统窗口出现之前。","From when you let go until the system window appears.","離してからシステムのウインドウが表示されるまで。","놓은 뒤 시스템 창이 뜨기 전까지.","Desde que sueltas hasta que aparece la ventana del sistema.","De quando você solta até a janela do sistema aparecer.","छोड़ने से लेकर सिस्टम विंडो दिखने तक।","Dari saat dilepaskan sehingga tetingkap sistem muncul."],"st4_t":["選擇裝置","选择设备","Choosing a device","デバイスを選択","기기 선택","Elegir dispositivo","Escolher dispositivo","डिवाइस चुनना","Memilih peranti"],"st4_d":["瀏海收回，看系統的 AirDrop 視窗；選單列的紙飛機縮進圈裡。","刘海收回，看系统的 AirDrop 窗口；菜单栏的纸飞机缩进圈里。","The notch tucks back in; look at the system AirDrop window. The paper plane in the menu bar shrinks into a ring.","ノッチは引っ込むので、システムの AirDrop ウインドウを見てください。メニューバーの紙飛行機はリングの中に縮みます。","노치가 들어가니 시스템 AirDrop 창을 보세요. 메뉴 막대의 종이비행기는 링 안으로 줄어듭니다.","El notch se recoge; mira la ventana de AirDrop del sistema. El avión de papel de la barra de menús se encoge dentro de un anillo.","O notch se recolhe; olhe a janela do AirDrop do sistema. O avião de papel da barra de menus encolhe dentro de um anel.","नॉच वापस सिमट जाता है; सिस्टम की AirDrop विंडो देखें। मेनू बार का कागज़ी हवाई जहाज़ रिंग में सिकुड़ जाता है।","Notch masuk semula; lihat tetingkap AirDrop sistem. Kapal terbang kertas di bar menu mengecil ke dalam cincin."],"st5_t":["選單列進度環","菜单栏进度环","Menu bar progress ring","メニューバーの進捗リング","메뉴 막대 진행 링","Anillo de progreso en la barra de menús","Anel de progresso na barra de menus","मेनू बार प्रगति रिंग","Cincin kemajuan bar menu"],"st5_d":["點了人之後開始跑：依檔案大小估算跑到 90%，系統回報完成才補滿一圈，換成勾勾，1.2 秒後變回紙飛機。","点选对象后开始跑：按文件大小估算跑到 90%，系统报告完成才填满一圈，换成对勾，1.2 秒后变回纸飞机。","Starts once you click a person: it runs to 90% based on the estimated file size, fills the ring only when the system reports completion, turns into a check mark, and goes back to the paper plane after 1.2 seconds.","送り先をクリックすると動き出します。ファイルサイズから見積もって 90% まで進み、システムが完了を報告したときだけ一周してチェックマークになり、1.2 秒後に紙飛行機へ戻ります。","받을 사람을 클릭하면 움직이기 시작합니다. 파일 크기로 추정해 90%까지 진행하고, 시스템이 완료를 알려야 한 바퀴를 채우고 체크 표시로 바뀌며, 1.2초 뒤 종이비행기로 돌아갑니다.","Empieza al hacer clic en una persona: avanza hasta el 90 % según el tamaño estimado del archivo, solo se completa cuando el sistema confirma el envío, se convierte en una marca de verificación y vuelve al avión de papel tras 1,2 segundos.","Começa quando você clica em alguém: avança até 90% com base no tamanho estimado do arquivo, só se completa quando o sistema confirma o envio, vira um sinal de visto e volta ao avião de papel após 1,2 segundo.","किसी को चुनते ही चलना शुरू: फ़ाइल साइज़ के अनुमान से 90% तक जाती है, सिस्टम के पूरा होने की सूचना देने पर ही पूरी भरती है, सही का निशान बनती है और 1.2 सेकंड बाद फिर कागज़ी हवाई जहाज़ बन जाती है।","Bermula selepas anda klik penerima: bergerak hingga 90% berdasarkan anggaran saiz fail, hanya penuh apabila sistem melaporkan selesai, bertukar kepada tanda semak, dan kembali menjadi kapal terbang kertas selepas 1.2 saat."],"st6_t":["已用 AirDrop 送出","已用 AirDrop 发出","Sent with AirDrop","AirDrop で送信済み","AirDrop으로 보냄","Enviado por AirDrop","Enviado por AirDrop","AirDrop से भेजा गया","Dihantar dengan AirDrop"],"st6_d":["綠色勾勾，1.6 秒後自己收起來。","绿色对勾，1.6 秒后自己收起来。","A green check mark that tucks away on its own after 1.6 seconds.","緑のチェックマーク。1.6 秒後に自動で引っ込みます。","초록색 체크 표시. 1.6초 뒤 알아서 들어갑니다.","Una marca verde que se recoge sola tras 1,6 segundos.","Um sinal de visto verde que se recolhe sozinho após 1,6 segundo.","हरा सही का निशान, 1.6 सेकंड बाद अपने‑आप छिप जाता है।","Tanda semak hijau yang masuk sendiri selepas 1.6 saat."],"st7_t":["沒有傳送","没有发送","Not sent","送信されませんでした","보내지 않음","No enviado","Não enviado","नहीं भेजा गया","Tidak dihantar"],"st7_d":["你按了取消，或關掉了 AirDrop 視窗。","你点了取消，或关闭了 AirDrop 窗口。","You clicked Cancel or closed the AirDrop window.","キャンセルを押したか、AirDrop ウインドウを閉じました。","취소를 눌렀거나 AirDrop 창을 닫았습니다.","Pulsaste Cancelar o cerraste la ventana de AirDrop.","Você clicou em Cancelar ou fechou a janela do AirDrop.","आपने रद्द करें दबाया या AirDrop विंडो बंद कर दी।","Anda klik Batal atau menutup tetingkap AirDrop."],"st8_t":["傳送失敗，再試一次","发送失败，再试一次","Send failed, try again","送信に失敗、もう一度","전송 실패, 다시 시도","Error al enviar, reintentar","Falha no envio, tentar de novo","भेजना विफल, फिर कोशिश करें","Gagal dihantar, cuba lagi"],"st8_d":["AirDrop 沒有打開，例如 Wi‑Fi 或藍牙關著。點一下膠囊重新打開；滑鼠停在上面時不會自動收起。","AirDrop 没有打开，例如 Wi‑Fi 或蓝牙关着。点一下胶囊重新打开；鼠标停在上面时不会自动收起。","AirDrop didn’t open, for example because Wi‑Fi or Bluetooth is off. Click the pill to reopen it; it won’t tuck away while the pointer rests on it.","AirDrop が開きませんでした（Wi‑Fi や Bluetooth がオフなど）。カプセルをクリックすると開き直します。ポインタを乗せている間は自動で引っ込みません。","AirDrop이 열리지 않았습니다(예: Wi‑Fi나 Bluetooth가 꺼져 있음). 캡슐을 클릭하면 다시 엽니다. 포인터를 올려 두는 동안에는 자동으로 들어가지 않습니다.","AirDrop no se abrió, por ejemplo porque la Wi‑Fi o el Bluetooth están apagados. Haz clic en la cápsula para volver a abrirlo; no se recoge mientras el puntero esté encima.","O AirDrop não abriu, por exemplo porque o Wi‑Fi ou o Bluetooth estão desligados. Clique na cápsula para abrir de novo; ela não se recolhe enquanto o ponteiro estiver em cima.","AirDrop नहीं खुला, जैसे Wi‑Fi या Bluetooth बंद हो। दोबारा खोलने के लिए कैप्सूल पर क्लिक करें; पॉइंटर उस पर रहने तक वह अपने‑आप नहीं छिपता।","AirDrop tidak dibuka, contohnya kerana Wi‑Fi atau Bluetooth dimatikan. Klik kapsul untuk membukanya semula; ia tidak akan masuk sendiri selagi penuding berada di atasnya."],"mn1!":["<b>傳送檔案…</b>（<kbd>⌘O</kbd>）：選檔案或資料夾，直接打開 AirDrop。","<b>发送文件…</b>（<kbd>⌘O</kbd>）：选文件或文件夹，直接打开 AirDrop。","<b>Send Files…</b> (<kbd>⌘O</kbd>): pick files or folders and AirDrop opens right away.","<b>ファイルを送信…</b>（<kbd>⌘O</kbd>）：ファイルやフォルダを選ぶと、すぐに AirDrop が開きます。","<b>파일 보내기…</b>(<kbd>⌘O</kbd>): 파일이나 폴더를 고르면 바로 AirDrop이 열립니다.","<b>Enviar archivos…</b> (<kbd>⌘O</kbd>): elige archivos o carpetas y AirDrop se abre al instante.","<b>Enviar arquivos…</b> (<kbd>⌘O</kbd>): escolha arquivos ou pastas e o AirDrop abre na hora.","<b>फ़ाइलें भेजें…</b> (<kbd>⌘O</kbd>): फ़ाइलें या फ़ोल्डर चुनें, AirDrop सीधे खुल जाता है।","<b>Hantar Fail…</b> (<kbd>⌘O</kbd>): pilih fail atau folder, AirDrop terus dibuka."],"mn2!":["<b>傳送剪貼簿的檔案</b>（<kbd>⌃⌥V</kbd>）：在 Finder 拷貝（<kbd>⌘C</kbd>）檔案後使用；剪貼簿沒有檔案時這一項會變灰。","<b>发送剪贴板中的文件</b>（<kbd>⌃⌥V</kbd>）：在 Finder 拷贝（<kbd>⌘C</kbd>）文件后使用；剪贴板没有文件时这一项会变灰。","<b>Send Files on Clipboard</b> (<kbd>⌃⌥V</kbd>): use it after copying files in Finder (<kbd>⌘C</kbd>); it’s greyed out when there are no files on the clipboard.","<b>クリップボードのファイルを送信</b>（<kbd>⌃⌥V</kbd>）：Finder でファイルをコピー（<kbd>⌘C</kbd>）してから使います。クリップボードにファイルがないときはグレー表示になります。","<b>클립보드의 파일 보내기</b>(<kbd>⌃⌥V</kbd>): Finder에서 파일을 복사(<kbd>⌘C</kbd>)한 뒤 사용합니다. 클립보드에 파일이 없으면 이 항목은 회색으로 표시됩니다.","<b>Enviar archivos del portapapeles</b> (<kbd>⌃⌥V</kbd>): úsalo después de copiar archivos en el Finder (<kbd>⌘C</kbd>); aparece atenuado si no hay archivos en el portapapeles.","<b>Enviar arquivos da área de transferência</b> (<kbd>⌃⌥V</kbd>): use depois de copiar arquivos no Finder (<kbd>⌘C</kbd>); fica esmaecido quando não há arquivos na área de transferência.","<b>क्लिपबोर्ड की फ़ाइलें भेजें</b> (<kbd>⌃⌥V</kbd>): Finder में फ़ाइलें कॉपी (<kbd>⌘C</kbd>) करने के बाद इस्तेमाल करें; क्लिपबोर्ड में फ़ाइल न हो तो यह विकल्प धुंधला दिखता है।","<b>Hantar Fail dari Papan Keratan</b> (<kbd>⌃⌥V</kbd>): gunakan selepas menyalin fail dalam Finder (<kbd>⌘C</kbd>); item ini dikelabukan apabila tiada fail dalam papan keratan."],"mn3!":["<b>最近傳送</b>：列出最近 3 筆。點一下在 Finder 顯示檔案；按住 <kbd>⌥</kbd> 會變成「再傳一次」。不要了可以按「清除紀錄」。","<b>最近发送</b>：列出最近 3 条。点一下在 Finder 中显示文件；按住 <kbd>⌥</kbd> 会变成“再发一次”。不需要了可以点“清除记录”。","<b>Recently Sent</b>: lists your last 3. Click to show the file in Finder; hold <kbd>⌥</kbd> and it becomes “Send Again”. Use “Clear History” to remove them.","<b>最近の送信</b>：直近 3 件を表示。クリックで Finder にファイルを表示、<kbd>⌥</kbd> を押したままにすると「もう一度送信」に変わります。不要なら「履歴を消去」を押します。","<b>최근 전송</b>: 최근 3개를 보여 줍니다. 클릭하면 Finder에서 파일을 보여 주고, <kbd>⌥</kbd>를 누르고 있으면 ‘다시 보내기’로 바뀝니다. 필요 없으면 ‘기록 지우기’를 누르세요.","<b>Enviados recientes</b>: muestra los 3 últimos. Haz clic para mostrar el archivo en el Finder; mantén <kbd>⌥</kbd> y cambia a «Volver a enviar». Usa «Borrar historial» para quitarlos.","<b>Enviados recentemente</b>: lista os 3 últimos. Clique para mostrar o arquivo no Finder; segure <kbd>⌥</kbd> e ele vira “Enviar de novo”. Use “Limpar histórico” para removê-los.","<b>हाल में भेजी गई फ़ाइलें</b>: आख़िरी 3 दिखाता है। क्लिक करें तो फ़ाइल Finder में दिखेगी; <kbd>⌥</kbd> दबाए रखें तो यह “फिर से भेजें” बन जाता है। हटाने के लिए “इतिहास साफ़ करें” दबाएँ।","<b>Dihantar Baru-baru Ini</b>: menyenaraikan 3 terkini. Klik untuk tunjuk fail dalam Finder; tahan <kbd>⌥</kbd> dan ia bertukar kepada “Hantar Semula”. Gunakan “Kosongkan Sejarah” untuk membuangnya."],"mn4":["傳送中時，選單最上面會顯示進度，例如「60%，約 8 秒」，選單開著也會即時更新。","发送中时，菜单最上面会显示进度，例如“60%，约 8 秒”，菜单开着也会实时更新。","While sending, the top of the menu shows progress, such as “60%, about 8 seconds”, and it updates live while the menu is open.","送信中はメニューの一番上に「60%、残り約 8 秒」のように進捗が表示され、メニューを開いたままでもリアルタイムで更新されます。","전송 중에는 메뉴 맨 위에 ‘60%, 약 8초’처럼 진행 상황이 표시되며, 메뉴를 열어 둔 상태에서도 실시간으로 업데이트됩니다.","Durante el envío, la parte superior del menú muestra el progreso, por ejemplo «60 %, unos 8 segundos», y se actualiza en directo con el menú abierto.","Durante o envio, o topo do menu mostra o progresso, por exemplo “60%, cerca de 8 segundos”, e atualiza ao vivo com o menu aberto.","भेजते समय मेनू में सबसे ऊपर प्रगति दिखती है, जैसे “60%, लगभग 8 सेकंड”, और मेनू खुला रहने पर भी तुरंत अपडेट होती है।","Semasa menghantar, bahagian atas menu menunjukkan kemajuan, contohnya “60%, kira-kira 8 saat”, dan dikemas kini secara langsung semasa menu dibuka."],"c1":["在系統 AirDrop 視窗按「取消」，或在選單按「取消傳送」，效果一樣，都會關掉 AirDrop 視窗。","在系统 AirDrop 窗口点“取消”，或在菜单点“取消发送”，效果一样，都会关闭 AirDrop 窗口。","Clicking “Cancel” in the system AirDrop window or “Cancel Sending” in the menu does the same thing: both close the AirDrop window.","システムの AirDrop ウインドウで「キャンセル」を押しても、メニューで「送信をキャンセル」を押しても同じで、どちらも AirDrop ウインドウを閉じます。","시스템 AirDrop 창에서 ‘취소’를 누르거나 메뉴에서 ‘전송 취소’를 누르면 똑같이 AirDrop 창이 닫힙니다.","Pulsar «Cancelar» en la ventana de AirDrop del sistema o «Cancelar envío» en el menú tiene el mismo efecto: ambos cierran la ventana de AirDrop.","Clicar em “Cancelar” na janela do AirDrop do sistema ou em “Cancelar envio” no menu tem o mesmo efeito: os dois fecham a janela do AirDrop.","सिस्टम AirDrop विंडो में “रद्द करें” दबाएँ या मेनू में “भेजना रद्द करें”, असर एक ही है: दोनों AirDrop विंडो बंद कर देते हैं।","Klik “Batal” dalam tetingkap AirDrop sistem atau “Batalkan Penghantaran” dalam menu memberi kesan yang sama: kedua-duanya menutup tetingkap AirDrop."],"c2":["取消後瀏海會顯示「沒有傳送」，什麼都不會送出去。","取消后刘海会显示“没有发送”，什么都不会发出去。","After cancelling, the notch shows “Not sent” and nothing goes out.","キャンセルするとノッチに「送信されませんでした」と表示され、何も送信されません。","취소하면 노치에 ‘보내지 않음’이 표시되고 아무것도 보내지 않습니다.","Tras cancelar, el notch muestra «No enviado» y no se envía nada.","Depois de cancelar, o notch mostra “Não enviado” e nada é enviado.","रद्द करने के बाद नॉच में “नहीं भेजा गया” दिखता है और कुछ भी नहीं भेजा जाता।","Selepas dibatalkan, notch menunjukkan “Tidak dihantar” dan tiada apa-apa dihantar."],"p1!":["<b>輔助使用</b>（建議）：讀取系統 AirDrop 視窗的狀態，傳完自動按「完成」，並在瀏海顯示結果。沒有開也能傳送，只是要自己關視窗，瀏海也不會顯示結果。之後想開：選單的<b>開啟輔助使用權限…</b>，或到「系統設定」的「隱私權與安全性」，在「輔助使用」裡打開「傳送都ok」。","<b>辅助功能</b>（建议）：读取系统 AirDrop 窗口的状态，发送完自动点“完成”，并在刘海显示结果。不开也能发送，只是要自己关窗口，刘海也不会显示结果。之后想开：菜单中的<b>开启辅助功能权限…</b>，或到“系统设置”的“隐私与安全性”，在“辅助功能”里打开“传送都ok”。","<b>Accessibility</b> (recommended): reads the status of the system AirDrop window, clicks “Done” automatically when sending finishes, and shows the result in the notch. Sending works without it, but you’ll close the window yourself and the notch won’t show the result. To turn it on later, choose <b>Enable Accessibility Permission…</b> in the menu, or go to System Settings › Privacy &amp; Security › Accessibility and turn on “Send OK”.","<b>アクセシビリティ</b>（推奨）：システムの AirDrop ウインドウの状態を読み取り、送信が終わると自動で「完了」を押して、結果をノッチに表示します。オフでも送信できますが、ウインドウは自分で閉じる必要があり、ノッチに結果も表示されません。あとでオンにするには、メニューの<b>アクセシビリティ権限を有効にする…</b>を選ぶか、「システム設定」の「プライバシーとセキュリティ」＞「アクセシビリティ」で「Send OK」をオンにします。","<b>손쉬운 사용</b>(권장): 시스템 AirDrop 창의 상태를 읽어 전송이 끝나면 자동으로 ‘완료’를 누르고 결과를 노치에 표시합니다. 켜지 않아도 보낼 수 있지만 창을 직접 닫아야 하고 노치에 결과도 표시되지 않습니다. 나중에 켜려면 메뉴의 <b>손쉬운 사용 권한 켜기…</b>를 선택하거나, ‘시스템 설정’의 ‘개인정보 보호 및 보안’ › ‘손쉬운 사용’에서 ‘Send OK’를 켜세요.","<b>Accesibilidad</b> (recomendado): lee el estado de la ventana de AirDrop del sistema, pulsa «Listo» automáticamente al terminar y muestra el resultado en el notch. Sin él también puedes enviar, pero tendrás que cerrar la ventana tú y el notch no mostrará el resultado. Para activarlo después, elige <b>Activar permiso de Accesibilidad…</b> en el menú, o ve a Ajustes del Sistema › Privacidad y seguridad › Accesibilidad y activa «Send OK».","<b>Acessibilidade</b> (recomendado): lê o status da janela do AirDrop do sistema, clica em “Concluído” automaticamente ao terminar e mostra o resultado no notch. Sem ela também dá para enviar, mas você mesmo fecha a janela e o notch não mostra o resultado. Para ativar depois, escolha <b>Ativar permissão de Acessibilidade…</b> no menu, ou vá em Ajustes do Sistema › Privacidade e Segurança › Acessibilidade e ative o “Send OK”.","<b>ऐक्सेसिबिलिटी</b> (सुझाया गया): सिस्टम AirDrop विंडो की स्थिति पढ़ता है, भेजना पूरा होने पर अपने‑आप “हो गया” दबाता है और नतीजा नॉच में दिखाता है। इसके बिना भी भेज सकते हैं, बस विंडो खुद बंद करनी होगी और नॉच नतीजा नहीं दिखाएगा। बाद में चालू करने के लिए मेनू में <b>ऐक्सेसिबिलिटी अनुमति चालू करें…</b> चुनें, या System Settings › Privacy &amp; Security › Accessibility में जाकर “Send OK” चालू करें।","<b>Kebolehcapaian</b> (disyorkan): membaca status tetingkap AirDrop sistem, klik “Selesai” secara automatik apabila penghantaran selesai, dan menunjukkan hasilnya di notch. Tanpanya pun masih boleh hantar, cuma anda perlu tutup tetingkap sendiri dan notch tidak menunjukkan hasil. Untuk menghidupkannya kemudian, pilih <b>Dayakan Kebenaran Kebolehcapaian…</b> dalam menu, atau pergi ke Seting Sistem › Privasi &amp; Keselamatan › Kebolehcapaian dan hidupkan “Send OK”."],"p2!":["<b>登入時自動開啟</b>（選用）：使用 macOS 的登入項目。","<b>登录时自动打开</b>（可选）：使用 macOS 的登录项。","<b>Open at Login</b> (optional): uses macOS Login Items.","<b>ログイン時に開く</b>（任意）：macOS のログイン項目を使います。","<b>로그인 시 자동 실행</b>(선택): macOS의 로그인 항목을 사용합니다.","<b>Abrir al iniciar sesión</b> (opcional): usa los ítems de inicio de sesión de macOS.","<b>Abrir ao iniciar sessão</b> (opcional): usa os Itens de Início do macOS.","<b>लॉगिन पर खोलें</b> (वैकल्पिक): macOS के Login Items का इस्तेमाल करता है।","<b>Buka semasa Log Masuk</b> (pilihan): menggunakan Item Log Masuk macOS."],"p3":["不需要完整磁碟取用、螢幕錄製、相機、麥克風、位置或聯絡人權限。","不需要完全磁盘访问、录屏、摄像头、麦克风、位置或通讯录权限。","No Full Disk Access, Screen Recording, Camera, Microphone, Location or Contacts permission needed.","フルディスクアクセス、画面収録、カメラ、マイク、位置情報、連絡先の権限は不要です。","전체 디스크 접근 권한, 화면 기록, 카메라, 마이크, 위치, 연락처 권한은 필요 없습니다.","No necesita permisos de acceso total al disco, grabación de pantalla, cámara, micrófono, ubicación ni contactos.","Não precisa de permissões de Acesso Total ao Disco, Gravação de Tela, Câmera, Microfone, Localização ou Contatos.","Full Disk Access, स्क्रीन रिकॉर्डिंग, कैमरा, माइक्रोफ़ोन, लोकेशन या कॉन्टैक्ट्स की अनुमति की ज़रूरत नहीं।","Tidak memerlukan kebenaran Akses Cakera Penuh, Rakaman Skrin, Kamera, Mikrofon, Lokasi atau Kenalan."],"f1!":["<b>AirDrop 視窗裡沒有人？</b>請對方打開 AirDrop，設成「所有人（10 分鐘）」或把你加入聯絡人；兩台裝置都要開 Wi‑Fi 與藍牙，距離不要太遠。","<b>AirDrop 窗口里没有人？</b>请对方打开 AirDrop，设为“所有人（10 分钟）”或把你加入通讯录；两台设备都要开 Wi‑Fi 与蓝牙，距离不要太远。","<b>Nobody shows up in the AirDrop window?</b> Ask the other person to turn on AirDrop and set it to “Everyone for 10 Minutes”, or add you to their contacts. Both devices need Wi‑Fi and Bluetooth on, and shouldn’t be too far apart.","<b>AirDrop ウインドウに誰も表示されない？</b>相手に AirDrop をオンにして「すべての人（10分間）」に設定するか、あなたを連絡先に追加してもらってください。両方のデバイスで Wi‑Fi と Bluetooth をオンにし、離れすぎないようにします。","<b>AirDrop 창에 아무도 없나요?</b> 상대에게 AirDrop을 켜고 ‘모든 사람(10분 동안)’으로 설정하거나 나를 연락처에 추가해 달라고 하세요. 두 기기 모두 Wi‑Fi와 Bluetooth를 켜고 너무 멀리 떨어지지 않아야 합니다.","<b>¿No aparece nadie en la ventana de AirDrop?</b> Pide a la otra persona que active AirDrop en «Todos durante 10 minutos» o que te añada a sus contactos. Ambos dispositivos necesitan la Wi‑Fi y el Bluetooth activados y no estar demasiado lejos.","<b>Ninguém aparece na janela do AirDrop?</b> Peça para a outra pessoa ativar o AirDrop em “Todos por 10 minutos” ou adicionar você aos contatos. Os dois aparelhos precisam estar com Wi‑Fi e Bluetooth ligados e não muito longe um do outro.","<b>AirDrop विंडो में कोई नहीं दिख रहा?</b> सामने वाले से AirDrop चालू करके “सभी के लिए 10 मिनट” चुनने या आपको कॉन्टैक्ट्स में जोड़ने को कहें। दोनों डिवाइस पर Wi‑Fi और Bluetooth चालू हों और वे बहुत दूर न हों।","<b>Tiada sesiapa dalam tetingkap AirDrop?</b> Minta penerima menghidupkan AirDrop dan tetapkan kepada “Semua Orang selama 10 Minit”, atau tambah anda dalam kenalan mereka. Kedua-dua peranti perlu menghidupkan Wi‑Fi dan Bluetooth, dan tidak terlalu jauh."],"f2!":["<b>拖過去瀏海沒反應？</b>確認選單列有紙飛機，也就是 App 正在執行；只有拖曳「檔案」會觸發，文字或網址不會。","<b>拖到刘海没反应？</b>确认菜单栏有纸飞机，也就是 App 正在运行；只有拖拽“文件”会触发，文字或网址不会。","<b>Nothing happens when you drag to the notch?</b> Check that the paper plane is in the menu bar, meaning the app is running. Only dragging files triggers it, not text or URLs.","<b>ノッチへドラッグしても反応しない？</b>メニューバーに紙飛行機があるか（App が起動しているか）確認してください。反応するのはファイルのドラッグだけで、テキストや URL では反応しません。","<b>노치로 끌어도 반응이 없나요?</b> 메뉴 막대에 종이비행기가 있는지, 즉 앱이 실행 중인지 확인하세요. ‘파일’을 끌 때만 반응하며 텍스트나 URL은 반응하지 않습니다.","<b>¿No pasa nada al arrastrar al notch?</b> Comprueba que el avión de papel esté en la barra de menús, es decir, que la app esté abierta. Solo se activa al arrastrar archivos, no texto ni URL.","<b>Nada acontece ao arrastar até o notch?</b> Confira se o avião de papel está na barra de menus, ou seja, se o app está aberto. Só arrastar arquivos ativa, não texto nem URLs.","<b>नॉच तक खींचने पर कुछ नहीं होता?</b> देखें कि मेनू बार में कागज़ी हवाई जहाज़ है, यानी ऐप चल रहा है। सिर्फ़ फ़ाइलें खींचने पर यह चालू होता है, टेक्स्ट या URL पर नहीं।","<b>Tiada tindak balas apabila diseret ke notch?</b> Pastikan kapal terbang kertas ada di bar menu, iaitu apl sedang berjalan. Hanya menyeret fail yang mencetuskannya, bukan teks atau URL."],"f3!":["<b>可以一次傳很多個嗎？</b>可以，多選後一起拖；瀏海會顯示「N 個項目」，下面列出照片與影片的數量和總大小。","<b>可以一次发很多个吗？</b>可以，多选后一起拖；刘海会显示“N 个项目”，下面列出照片与视频的数量和总大小。","<b>Can I send lots at once?</b> Yes. Select several and drag them together; the notch shows “N items”, with the number of photos and videos and the total size below.","<b>まとめて送れる？</b>はい。複数選択してまとめてドラッグすると、ノッチに「N 項目」と表示され、その下に写真とビデオの数と合計サイズが表示されます。","<b>한 번에 여러 개 보낼 수 있나요?</b> 네. 여러 개를 선택해 함께 끌면 노치에 ‘N개 항목’이 표시되고, 아래에 사진과 동영상 개수와 전체 크기가 나옵니다.","<b>¿Puedo enviar muchos a la vez?</b> Sí. Selecciona varios y arrástralos juntos; el notch muestra «N elementos», con el número de fotos y videos y el tamaño total debajo.","<b>Dá para enviar vários de uma vez?</b> Sim. Selecione vários e arraste juntos; o notch mostra “N itens”, com o número de fotos e vídeos e o tamanho total embaixo.","<b>क्या एक साथ कई भेज सकते हैं?</b> हाँ। कई चुनकर एक साथ खींचें; नॉच में “N आइटम” दिखेगा, नीचे फ़ोटो और वीडियो की गिनती और कुल साइज़।","<b>Boleh hantar banyak sekali gus?</b> Boleh. Pilih beberapa dan seret bersama; notch menunjukkan “N item”, dengan bilangan foto dan video serta jumlah saiz di bawahnya."],"f4!":["<b>傳完 AirDrop 視窗沒有自己關？</b>通常是還沒開「輔助使用」權限，或權限在更新後被系統關掉了，到系統設定重新打開即可。","<b>发送完 AirDrop 窗口没有自己关？</b>通常是还没开“辅助功能”权限，或权限在更新后被系统关掉了，到系统设置重新打开即可。","<b>The AirDrop window didn’t close after sending?</b> Usually the Accessibility permission isn’t on yet, or the system turned it off after an update. Turn it back on in System Settings.","<b>送信後に AirDrop ウインドウが自動で閉じない？</b>たいていは「アクセシビリティ」の権限がまだオフか、アップデート後にシステムがオフにしています。システム設定でもう一度オンにしてください。","<b>전송 후 AirDrop 창이 자동으로 닫히지 않나요?</b> 보통 ‘손쉬운 사용’ 권한을 아직 켜지 않았거나, 업데이트 후 시스템이 권한을 꺼 버린 경우입니다. 시스템 설정에서 다시 켜면 됩니다.","<b>¿La ventana de AirDrop no se cerró sola tras enviar?</b> Normalmente el permiso de Accesibilidad aún no está activado o el sistema lo desactivó tras una actualización. Vuelve a activarlo en Ajustes del Sistema.","<b>A janela do AirDrop não fechou sozinha depois de enviar?</b> Normalmente a permissão de Acessibilidade ainda não foi ativada, ou o sistema a desativou depois de uma atualização. Ative de novo nos Ajustes do Sistema.","<b>भेजने के बाद AirDrop विंडो अपने‑आप बंद नहीं हुई?</b> आमतौर पर “ऐक्सेसिबिलिटी” अनुमति अभी चालू नहीं है, या अपडेट के बाद सिस्टम ने उसे बंद कर दिया। System Settings में जाकर फिर से चालू करें।","<b>Tetingkap AirDrop tidak tutup sendiri selepas dihantar?</b> Biasanya kebenaran Kebolehcapaian belum dihidupkan, atau sistem mematikannya selepas kemas kini. Hidupkan semula dalam Seting Sistem."],"u1!":["1.1 起全自動更新：有新版本時在背景下載，沒在傳送時自己安裝並重新開啟，不用按任何按鈕。想馬上檢查，可以按選單的<b>檢查更新…</b>。","1.1 起全自动更新：有新版本时在后台下载，不在发送时自己安装并重新打开，不用点任何按钮。想马上检查，可以点菜单中的<b>检查更新…</b>。","From 1.1, updates are fully automatic: new versions download in the background, then install and relaunch on their own when nothing is being sent. No buttons to press. To check right away, choose <b>Check for Updates…</b> in the menu.","1.1 からアップデートは完全自動：新しいバージョンはバックグラウンドでダウンロードされ、送信していないときに自動でインストールして再起動します。ボタンを押す必要はありません。すぐに確認したいときは、メニューの<b>アップデートを確認…</b>を押します。","1.1부터 완전 자동 업데이트: 새 버전이 있으면 백그라운드에서 내려받고, 전송 중이 아닐 때 알아서 설치한 뒤 다시 실행합니다. 버튼을 누를 필요가 없습니다. 바로 확인하려면 메뉴의 <b>업데이트 확인…</b>을 누르세요.","Desde la 1.1, las actualizaciones son totalmente automáticas: las nuevas versiones se descargan en segundo plano y se instalan y reinician solas cuando no se está enviando nada. No hay que pulsar ningún botón. Para comprobarlo ya, elige <b>Buscar actualizaciones…</b> en el menú.","A partir da 1.1, as atualizações são totalmente automáticas: novas versões são baixadas em segundo plano e se instalam e reabrem sozinhas quando nada está sendo enviado. Não é preciso apertar nenhum botão. Para verificar na hora, escolha <b>Buscar atualizações…</b> no menu.","1.1 से अपडेट पूरी तरह अपने‑आप: नया वर्शन बैकग्राउंड में डाउनलोड होता है, और जब कुछ भेजा नहीं जा रहा हो तब खुद इंस्टॉल होकर दोबारा खुल जाता है। कोई बटन नहीं दबाना। तुरंत जाँचना हो तो मेनू में <b>अपडेट जाँचें…</b> दबाएँ।","Mulai 1.1, kemas kini automatik sepenuhnya: versi baharu dimuat turun di latar belakang, kemudian dipasang dan dibuka semula sendiri apabila tiada apa-apa sedang dihantar. Tak perlu tekan sebarang butang. Untuk menyemak serta-merta, pilih <b>Semak Kemas Kini…</b> dalam menu."],"u2":["還在用 1.0 的話，會先跳出一次更新視窗，按「安裝」升到 1.1，之後就是全自動。","还在用 1.0 的话，会先弹出一次更新窗口，点“安装”升级到 1.1，之后就是全自动。","If you’re still on 1.0, an update window appears once. Click “Install” to move to 1.1; after that it’s fully automatic.","まだ 1.0 を使っている場合は、一度だけアップデートのウインドウが表示されます。「インストール」を押して 1.1 にすれば、その後は完全自動です。","아직 1.0을 쓰고 있다면 업데이트 창이 한 번 뜹니다. ‘설치’를 눌러 1.1로 올리면 그다음부터는 완전 자동입니다.","Si aún usas la 1.0, aparecerá una vez una ventana de actualización. Pulsa «Instalar» para pasar a la 1.1; a partir de ahí todo es automático.","Se você ainda usa a 1.0, uma janela de atualização aparece uma vez. Clique em “Instalar” para ir para a 1.1; depois disso é tudo automático.","अगर अभी भी 1.0 चला रहे हैं, तो एक बार अपडेट विंडो आएगी। 1.1 पर जाने के लिए “इंस्टॉल करें” दबाएँ; उसके बाद सब अपने‑आप होगा।","Jika anda masih menggunakan 1.0, tetingkap kemas kini akan muncul sekali. Klik “Pasang” untuk naik ke 1.1; selepas itu semuanya automatik."],"u3!":["移除：在選單按<b>結束傳送都ok</b>，再把「應用程式」裡的傳送都ok 丟到垃圾桶。","移除：在菜单点<b>退出传送都ok</b>，再把“应用程序”里的传送都ok 移到废纸篓。","To remove: choose <b>Quit Send OK</b> in the menu, then move Send OK from the Applications folder to the Trash.","削除するには：メニューで<b>Send OK を終了</b>を押し、「アプリケーション」フォルダの Send OK をゴミ箱に入れます。","제거하려면: 메뉴에서 <b>Send OK 종료</b>를 누른 뒤 ‘응용 프로그램’ 폴더의 Send OK를 휴지통에 버리세요.","Para desinstalar: elige <b>Salir de Send OK</b> en el menú y luego mueve Send OK de la carpeta Aplicaciones a la Papelera.","Para remover: escolha <b>Encerrar Send OK</b> no menu e depois mova o Send OK da pasta Aplicativos para o Lixo.","हटाने के लिए: मेनू में <b>Send OK बंद करें</b> चुनें, फिर Applications फ़ोल्डर से Send OK को ट्रैश में डालें।","Untuk alih keluar: pilih <b>Keluar Send OK</b> dalam menu, kemudian alihkan Send OK dari folder Aplikasi ke Tong Sampah."]};</script>
+<script>// ok-i18n: imokahhhh.com 共用多國語言。順序 = 網址 ?lang= → 使用者上次選的（全站共用 ok-lang）→ 瀏覽器語言 → English
+// 用法：頁面先放一段 inline script 設定 window.OK_I18N = { key: [9 個語言] }（順序同 LANGS），再放這支程式。
+// 標記：data-i="key"（換 textContent；key 以 ! 結尾換 innerHTML）、data-ia="aria-label:key;title:key2"（換屬性）。
+// 特殊 key：_title（document.title）、_desc（meta description）。
+(function () {
+  var D = window.OK_I18N || {};
+  var LANGS = ['zh-Hant', 'zh-Hans', 'en', 'ja', 'ko', 'es', 'pt', 'hi', 'ms'];
+  var NAMES = { 'zh-Hant': '繁體中文', 'zh-Hans': '简体中文', en: 'English', ja: '日本語', ko: '한국어', es: 'Español', pt: 'Português', hi: 'हिन्दी', ms: 'Bahasa Melayu' };
+  var SHORT = { 'zh-Hant': '繁中', 'zh-Hans': '简中', en: 'EN', ja: '日本語', ko: '한국어', es: 'ES', pt: 'PT', hi: 'हिं', ms: 'MS' };
+  var cur = 'zh-Hant';
+  function norm(t) {
+    t = String(t || '').toLowerCase();
+    if (t.indexOf('zh') === 0) return /hant|-tw|-hk|-mo/.test(t) ? 'zh-Hant' : 'zh-Hans';
+    var b = t.split('-')[0];
+    if (b === 'id') return 'ms';
+    return LANGS.indexOf(b) >= 0 ? b : null;
+  }
+  function detect() {
+    var q = /[?&]lang=([\w-]+)/.exec(location.search);
+    if (q) { var n = LANGS.indexOf(q[1]) >= 0 ? q[1] : norm(q[1]); if (n) return n; }
+    try {
+      var saved = localStorage.getItem('ok-lang') || localStorage.getItem('bk-lang');
+      if (LANGS.indexOf(saved) >= 0) return saved;
+    } catch (e) {}
+    var list = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language];
+    for (var i = 0; i < list.length; i++) { var l = norm(list[i]); if (l) return l; }
+    return 'en';
+  }
+  function t(key, lang) {
+    var v = D[key]; if (!v) return '';
+    var s = v[LANGS.indexOf(lang || cur)];
+    return s == null || s === '' ? (v[2] || v[0]) : s;   // 缺翻譯時退回英文，再退回繁中
+  }
+  function fmt(s, vars) { return String(s).replace(/\{(\w+)\}/g, function (m, k) { return vars && k in vars ? vars[k] : m; }); }
+  function apply(lang) {
+    cur = lang;
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-i]').forEach(function (el) {
+      var k = el.getAttribute('data-i'), v = t(k);
+      if (!v) return;
+      if (k.slice(-1) === '!') el.innerHTML = v; else el.textContent = v;
+    });
+    document.querySelectorAll('[data-ia]').forEach(function (el) {
+      el.getAttribute('data-ia').split(';').forEach(function (pair) {
+        var p = pair.split(':'); if (p.length === 2 && D[p[1]]) el.setAttribute(p[0].trim(), t(p[1].trim()));
+      });
+    });
+    if (D._title) document.title = t('_title');
+    var md = document.querySelector('meta[name="description"]'); if (md && D._desc) md.setAttribute('content', t('_desc'));
+    var c = document.getElementById('langCur'); if (c) { c.textContent = SHORT[lang]; }
+    var b = document.getElementById('langBtn'); if (b) b.setAttribute('aria-label', 'Language: ' + NAMES[lang]);
+    document.querySelectorAll('#langMenu [role="menuitemradio"]').forEach(function (x) { x.setAttribute('aria-checked', String(x.getAttribute('lang') === lang)); });
+    document.dispatchEvent(new CustomEvent('ok:lang', { detail: lang }));
+  }
+  window.OK = { t: t, fmt: fmt, lang: function () { return cur; }, apply: apply, LANGS: LANGS };
+
+  // 語言選單：地球圖示 + 簡稱，點開是各語言的原文名稱
+  var btn = document.getElementById('langBtn'), menu = document.getElementById('langMenu'), wrap = document.getElementById('lang');
+  if (btn && menu && wrap) {
+    LANGS.forEach(function (l) {
+      var li = document.createElement('li'); li.setAttribute('role', 'none');
+      var x = document.createElement('button');
+      x.type = 'button'; x.setAttribute('role', 'menuitemradio'); x.setAttribute('lang', l); x.textContent = NAMES[l];
+      x.addEventListener('click', function () {
+        try { localStorage.setItem('ok-lang', l); } catch (e) {}
+        close(); apply(l); btn.focus();
+      });
+      li.appendChild(x); menu.appendChild(li);
+    });
+    var open = function () { menu.hidden = false; btn.setAttribute('aria-expanded', 'true'); var c = menu.querySelector('[aria-checked="true"]') || menu.querySelector('button'); c.focus(); };
+    var close = function () { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); };
+    btn.addEventListener('click', function () { if (menu.hidden) open(); else close(); });
+    document.addEventListener('click', function (e) { if (!menu.hidden && !wrap.contains(e.target)) close(); });
+    menu.addEventListener('keydown', function (e) {
+      var items = Array.prototype.slice.call(menu.querySelectorAll('button')), i = items.indexOf(document.activeElement);
+      if (e.key === 'Escape') { close(); btn.focus(); }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); items[(i + 1) % items.length].focus(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
+    });
+  }
+  apply(detect());
+})();
+</script>
 </body>
 </html>
